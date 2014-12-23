@@ -1,4 +1,5 @@
 import praw
+import redditDownloader
 import getpass
 
 USERAGENT = ""
