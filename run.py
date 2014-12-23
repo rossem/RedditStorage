@@ -7,26 +7,48 @@ PASSWORD = ""
 SUBREDDIT = ""
 #MAXPOSTS = 100 
 
-continueloop = True
-
 r = praw.Reddit(USERAGENT) 
-r.login(USERNAME,PASSWORD)
+
+def _login():
+    USERNAME = raw_input("Username: ")
+    PASSWORD = getpass.getpass()
+    r.login(USERNAME, PASSWORD)
+
+def checkForMod(user, subreddit):
+        
+    subr = r.get_subreddit(subreddit)
+    mods = subr.get_moderators()
+
+    for mod in mods: 
+        if mod.lower() == user.lower():
+            return True
+    return False
 
 
-def main():
-    print "Welcome to RedditStorage. What would you like to do?"
-    print "1 - retrieve a file"
+trying = True
 
-    while continueloop:
-        selection = int(raw_input("> "))
+while trying:
+    try:
+        _login()
+        trying = False
+    except praw.errors.InvalidUserPass:
+        print "Invalid user/pass. Please try again."
 
-        if selection == 1: 
+
+SUBREDDIT = raw_input("Subreddit: ")
+while not checkForMod(USERNAME, SUBREDDIT):
+    print "Enter a different subreddit."
+    SUBREDDIT = raw_input("Subreddit: ")
+
     
-            filename = raw_input("Enter filename(include file extension): ")
-            filestring = searchForFile(filename)
-            
-            if filestring != "":
-                encrypt(filestring)
+while True:
+    selection = int(raw_input("> "))
 
-                
+    if selection == 1: 
+
+        filename = raw_input("Enter filename(include file extension): ")
+        filestring = searchForFile(filename)
+        
+        if filestring != "":
+            encrypt(filestring)
 
