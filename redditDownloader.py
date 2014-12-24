@@ -18,3 +18,12 @@ def searchForFile(filenm):
                fileString = fileString + rbody
 
             return fileString
+
+
+def post_encryption(filename, encryption):
+    print "fetching subreddit"
+    subreddit = r.get_subreddit(SUBREDDIT)
+    print "fetching comments"
+    comments = subreddit.get_comments()
+
+    
