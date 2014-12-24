@@ -1,34 +1,47 @@
 import hashlib
 from key import *
+import base64
+
 from Crypto.Cipher import AES
 from Crypto import Random
-import base64
 
 class AESCipher:
     
     def __init__(self, key):
-        self.bs = 32
+        #self.bs = 32
         self.key = hashlib.sha256(key).digest()
     
     def pad(self, s):
-        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
-
-    def unpad(self, s):
-        return s[:-ord(s[len(s)-1:])]
+        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
 
     def encrypt(self, plaintext):
         plaintext = self.pad(plaintext)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(plaintext))
+        return iv + cipher.encrypt(plaintext)
 
     def decrypt(self, ciphertext):
-        ciphertext = base64.b64decode(ciphertext)
         iv = ciphertext[:AES.block_size]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return self.unpad(cipher.decrypt(ciphertext[AES.block_size:])).decode('utf-8')
+        plaintext = cipher.decrypt(ciphertext[AES.block_size:])
+        return plaintext.rstrip(b"\0")
+    
+    def encrypt_file(self, file_name):
+        with open(file_name, 'rb') as fo:
+            plaintext = fo.read()
+        enc = encrypt(plaintext, key)
+        with open(file_name + ".enc", 'wb') as fo:
+            fo.write(enc)
+
+    def decrypt_file(file_name, key):
+        with open(file_name, 'rb') as fo:
+            ciphertext = fo.read()
+        dec = decrypt(ciphertext, key)
+        with open(file_name[:-4], 'wb') as fo:
+            fo.write(dec)
 
 
+"""
 cipher1 = AESCipher(KEYPASS)
 
 print cipher1.key
@@ -40,3 +53,6 @@ decryption = cipher1.decrypt(encryption)
 
 print encryption
 print decryption
+"""
+
+
