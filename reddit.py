@@ -1,26 +1,5 @@
 import praw
 
-def searchForFile(filenm):
-    fileString = "" #this is the string that we want to return
-
-    print "Fetching subreddit"
-    subreddit = r.get_subreddit(SUBREDDIT)
-
-    print "Fetching comments"
-    comments = subreddit.get_comments()
-
-    for comment in comments:
-        cbody = comment.body.lower()
-
-        if cbody == filenm.lower() and comment.is_root():
-            creplies = comment.replies()
-            
-            for reply in creplies:
-               rbody = reply.body
-               fileString = fileString + rbody
-
-            return fileString
-
 
 def post_encryption(filename, encryption):
     print "fetching subreddit"
@@ -78,8 +57,8 @@ def post_encryption(filename, encryption):
 #When writing the function to fetch the comments and turn it into file, remember to use flat_comments: they come sorted already => just need to concatenate them
 
 def get_decryption(filename):
-    #to-do
-    decryption = ''
+
+    decryption = '' #what we want to return
     
     subreddit = r.get_subreddit(SUBREDDIT)
     comments = subreddit.get_comments()
@@ -96,6 +75,7 @@ def get_decryption(filename):
                 decryption = decryption + comment.body
 
             break
+
     return decryption
             
 
