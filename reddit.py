@@ -25,11 +25,10 @@ def searchForFile(filenm):
 def post_encryption(filename, encryption):
     print "fetching subreddit"
     subreddit = r.get_subreddit(SUBREDDIT)
-    print "fetching comments"
-    comments = subreddit.get_comments()
+    #print "fetching comments"
+    #comments = subreddit.get_comments()
 
     does_not_exist = True 
-
     file_submissions = r.search(filename, SUBREDDIT)
 
     #getting the submission of the file if it exists already
@@ -78,5 +77,26 @@ def post_encryption(filename, encryption):
 
 #When writing the function to fetch the comments and turn it into file, remember to use flat_comments: they come sorted already => just need to concatenate them
 
-def get_decreption(filename):
+def get_decryption(filename):
     #to-do
+    decryption = ''
+    
+    subreddit = r.get_subreddit(SUBREDDIT)
+    comments = subreddit.get_comments()
+
+    file_submissions = r.search(filename, SUBREDDIT)
+
+    for submission in file_submissions:
+
+        if submission.title.lower() == filename.lower():
+            forest_comments = submission.comments
+            flat_comments = praw.helpers.flatten_tee(forest_comments)
+
+            for commment in flat_comments:
+                decryption = decryption + comment.body
+
+            break
+    return decryption
+            
+
+
