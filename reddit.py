@@ -38,6 +38,15 @@ def post_encryption(filename, encryption):
         if submission.title.lower() == filename.lower():
             file_post = submission
             does_not_exist = False
+
+            #overwrite the file: need to delete the previous comments in this submission
+            forest_comments = submission.comments
+            flat_comments = praw.helpers.flatten_tree(forest_comments)
+
+            for comment in flat comments:
+                comment.delete()
+
+            #break out of the loop, found our submission
             break
 
     #create submission if does not exist
