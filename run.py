@@ -12,17 +12,6 @@ from Crypto.Cipher import AES
 from Crypto import Random
 
 from redditglobals import * 
-"""
-global USERAGENT,USERNAME,PASSWORD,SUBREDDIT,r
-
-USERAGENT = "/u/wltrs testing reddit bot"
-USERNAME = ""
-PASSWORD = ""
-SUBREDDIT = "redditstoragetest"
-#MAXPOSTS = 100 
-
-r = praw.Reddit(USERAGENT) 
-"""
 
 def _login():
     USERNAME = raw_input("Username: ")
@@ -59,17 +48,7 @@ while checkForMod(USERNAME, SUBREDDIT):
 
     
 while True:
-    """
-    selection = int(raw_input("> "))
 
-    if selection == 1: 
-
-        filename = raw_input("Enter filename(include file extension): ")
-        filestring = searchForFile(filename)
-        
-        if filestring != "":
-            encrypt(filestring)
-    """
     filename = raw_input("enter file: ")
     selection = raw_input("post or get: ")
     cipher = AESCipher(KEYPASS)

@@ -2,7 +2,6 @@ import praw
 from redditglobals import *
 
 def post_encryption(filename, encryption):
-    print "fetching subreddit"
     subreddit = r.get_subreddit(SUBREDDIT)
     #print "fetching comments"
     #comments = subreddit.get_comments()
@@ -51,9 +50,6 @@ def post_encryption(filename, encryption):
 
 
 
-
-
-
 #When writing the function to fetch the comments and turn it into file, remember to use flat_comments: they come sorted already => just need to concatenate them
 
 def get_decryption(filename):
@@ -65,32 +61,18 @@ def get_decryption(filename):
 
     file_submissions = r.search(filename, SUBREDDIT)
 
+    #find our file's post
     for submission in file_submissions:
 
         if submission.title.lower() == filename.lower():
             subm = submission
             break
-            """flat_comments = praw.helpers.flatten_tree(submission.comments)
-
-            counter = 0
-            for root_comment in flat_comments:
-                counter += 1
-                try:
-                    decryption = decryption + root_comment.body
-                except AttributeError:
-                    pass
-                print decryption
-                print len(decryption)
-                print counter
-                return decryption
-                """
+    #make all of the comments same-level 
     comments = praw.helpers.flatten_tree(subm.comments)
-    counter = 0
+
     for comment in comments:
         decryption = decryption + comment.body
-        counter += 1
-    print decryption 
-    print len(decryption)
+
     return decryption
 
             

@@ -10,44 +10,46 @@ class AESCipher:
     
     def __init__(self, key):
         #self.bs = 32
-        self.key = hashlib.sha256(key).digest()
+        self.key = hashlib.sha256(key).digest() #turns the password into a 32char long key
     
+        #need to make our string divisible by 16 for AES encryption
     def pad(self, s):
         return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
-
+        
+        #encrypts plaintext and generates IV (initialization vector)
     def encrypt(self, plaintext):
         plaintext = self.pad(plaintext)
         iv = Random.new().read(AES.block_size)
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         return iv + cipher.encrypt(plaintext)
 
+        #derypts ciphertexts
     def decrypt(self, ciphertext):
         iv = ciphertext[:AES.block_size]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         plaintext = cipher.decrypt(ciphertext[AES.block_size:])
         return plaintext.rstrip(b"\0")
     
+        #encrypts a file and returns a comment to be posted
     def encrypt_file(self, file_name):
+
         with open(os.path.join('saved_files',file_name), 'rb') as fo:
             plaintext = fo.read()
         enc = self.encrypt(plaintext)
-        #with open(file_name + ".enc", 'wb') as fo:
-        #    fo.write(enc)
-        #comment = base64.standard_b64encode(enc)
         comment = base64.b64encode(enc)
         return comment 
         
-
+        #takes in a comment to be posted and decrypts it into a file
     def decrypt_file(self, comment, file_name):
-        #with open(file_name, 'rb') as fo:
-        #    ciphertext = fo.read()
-        #ciphertext = base64.standard_b64decode(comment)
+
         ciphertext = base64.b64decode(comment)
         dec = self.decrypt(ciphertext)
         with open(os.path.join('saved_files',file_name), 'wb') as fo:
             fo.write(dec)
 
 """
+example:
+
 cipher1 = AESCipher(KEYPASS)
 
 print cipher1.key
