@@ -1,18 +1,33 @@
 import praw
-import redditDownloader
+from reddit import *
 import getpass
 
-USERAGENT = ""
+from crypt import AESCipher
+import hashlib
+import os
+from key import *
+import base64
+
+from Crypto.Cipher import AES
+from Crypto import Random
+
+from redditglobals import * 
+"""
+global USERAGENT,USERNAME,PASSWORD,SUBREDDIT,r
+
+USERAGENT = "/u/wltrs testing reddit bot"
 USERNAME = ""
 PASSWORD = ""
-SUBREDDIT = ""
+SUBREDDIT = "redditstoragetest"
 #MAXPOSTS = 100 
 
 r = praw.Reddit(USERAGENT) 
+"""
 
 def _login():
     USERNAME = raw_input("Username: ")
-    PASSWORD = getpass.getpass()
+    #PASSWORD = getpass.getpass()
+    PASSWORD = raw_input("Password: ")
     r.login(USERNAME, PASSWORD)
 
 def checkForMod(user, subreddit):
@@ -21,9 +36,9 @@ def checkForMod(user, subreddit):
     mods = subr.get_moderators()
 
     for mod in mods: 
-        if mod.lower() == user.lower():
+        if mod == user:
             return True
-    return False
+    return False 
 
 
 trying = True
@@ -37,12 +52,14 @@ while trying:
 
 
 SUBREDDIT = raw_input("Subreddit: ")
-while not checkForMod(USERNAME, SUBREDDIT):
+
+while checkForMod(USERNAME, SUBREDDIT):
     print "Enter a different subreddit."
     SUBREDDIT = raw_input("Subreddit: ")
 
     
 while True:
+    """
     selection = int(raw_input("> "))
 
     if selection == 1: 
@@ -52,4 +69,11 @@ while True:
         
         if filestring != "":
             encrypt(filestring)
+    """
+    filename = raw_input("enter file: ")
+
+    cipher = AESCipher(KEYPASS)
+    comment = cipher.encrypt_file(filename)
+    post_encryption(filename, comment)
+
 

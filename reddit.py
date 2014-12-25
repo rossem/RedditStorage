@@ -1,5 +1,5 @@
 import praw
-
+from redditglobals import *
 
 def post_encryption(filename, encryption):
     print "fetching subreddit"
@@ -21,7 +21,7 @@ def post_encryption(filename, encryption):
             forest_comments = submission.comments
             flat_comments = praw.helpers.flatten_tree(forest_comments)
 
-            for comment in flat comments:
+            for comment in flat_comments:
                 comment.delete()
 
             #break out of the loop, found our submission

@@ -45,7 +45,7 @@ class AESCipher:
         with open(os.path.join('saved_files',file_name), 'wb') as fo:
             fo.write(dec)
 
-
+"""
 cipher1 = AESCipher(KEYPASS)
 
 print cipher1.key
@@ -59,4 +59,4 @@ print dog
 print "hello this is bad"
 print base64.b64decode(dog)
 
-
+"""
