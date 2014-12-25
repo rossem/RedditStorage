@@ -46,7 +46,7 @@ def post_encryption(filename, encryption):
             current_comment = current_comment.reply(encryption[:10000])
             encryption = encryption[10000:]
 
-    if len(encryption) != 0:
+    if len(encryption) > 0:
         current_comment.reply(encryption)
 
 
@@ -68,15 +68,31 @@ def get_decryption(filename):
     for submission in file_submissions:
 
         if submission.title.lower() == filename.lower():
-            forest_comments = submission.comments
-            flat_comments = praw.helpers.flatten_tee(forest_comments)
-
-            for commment in flat_comments:
-                decryption = decryption + comment.body
-
+            subm = submission
             break
+            """flat_comments = praw.helpers.flatten_tree(submission.comments)
 
+            counter = 0
+            for root_comment in flat_comments:
+                counter += 1
+                try:
+                    decryption = decryption + root_comment.body
+                except AttributeError:
+                    pass
+                print decryption
+                print len(decryption)
+                print counter
+                return decryption
+                """
+    comments = praw.helpers.flatten_tree(subm.comments)
+    counter = 0
+    for comment in comments:
+        decryption = decryption + comment.body
+        counter += 1
+    print decryption 
+    print len(decryption)
     return decryption
+
             
 
 

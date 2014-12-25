@@ -71,9 +71,17 @@ while True:
             encrypt(filestring)
     """
     filename = raw_input("enter file: ")
-
+    selection = raw_input("post or get: ")
     cipher = AESCipher(KEYPASS)
-    comment = cipher.encrypt_file(filename)
-    post_encryption(filename, comment)
+    
+    if selection == "post":
+        comment = cipher.encrypt_file(filename)
+        post_encryption(filename, comment)
+    else:
+        comment = get_decryption(filename)
+        cipher.decrypt_file(comment, filename)
+    print "done"
+
+    
 
 

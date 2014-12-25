@@ -33,6 +33,7 @@ class AESCipher:
         enc = self.encrypt(plaintext)
         #with open(file_name + ".enc", 'wb') as fo:
         #    fo.write(enc)
+        #comment = base64.standard_b64encode(enc)
         comment = base64.b64encode(enc)
         return comment 
         
@@ -40,6 +41,7 @@ class AESCipher:
     def decrypt_file(self, comment, file_name):
         #with open(file_name, 'rb') as fo:
         #    ciphertext = fo.read()
+        #ciphertext = base64.standard_b64decode(comment)
         ciphertext = base64.b64decode(comment)
         dec = self.decrypt(ciphertext)
         with open(os.path.join('saved_files',file_name), 'wb') as fo:
