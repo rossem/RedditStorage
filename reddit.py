@@ -76,11 +76,7 @@ def post_encryption(filename, encryption):
 
 
 
-        
+#When writing the function to fetch the comments and turn it into file, remember to use flat_comments: they come sorted already => just need to concatenate them
 
-
-
-        
-            
-
-    
+def get_decreption(filename):
+    #to-do
