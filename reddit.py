@@ -26,4 +26,32 @@ def post_encryption(filename, encryption):
     print "fetching comments"
     comments = subreddit.get_comments()
 
+    does_not_exist = True 
+
+    file_submissions = r.search(filename, SUBREDDIT)
+
+    for submission in file_submissions:
+
+        if submission.title.lower() == filename.lower():
+            file_post = submission
+            does_not_exist = False
+            break
+
+
+    if does_not_exist:
+        file_post = r.submit(SUBREDDIT, filename, " ")
+
+    while len(encryption) > 10000: 
+        #to-do
+
+
+
+
+        
+
+
+
+        
+            
+
     
