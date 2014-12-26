@@ -39,7 +39,7 @@ class MainWindow(wx.Frame):
 
         fgs = wx.FlexGridSizer(4, 2, 9, 25)
 
-        gs = wx.GridSizer(1,2,9,25)
+        gs = wx.GridSizer(2,2,9,25)
 
         username = wx.StaticText(panel, label="Username")
         password = wx.StaticText(panel, label="Password")
@@ -47,6 +47,10 @@ class MainWindow(wx.Frame):
         filename = wx.StaticText(panel, label="Filename")
         post = wx.Button(panel, ID_POST_BUTTON, "Post")
         get = wx.Button(panel, ID_GET_BUTTON, "Get")
+
+        global postMessage 
+        postMessage = wx.StaticText(panel, label = "")
+
 
         self.tc1 = wx.TextCtrl(panel)
         self.tc2 = wx.TextCtrl(panel, style = wx.TE_PASSWORD)
@@ -57,13 +61,14 @@ class MainWindow(wx.Frame):
             (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
             (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(post,1,wx.EXPAND), (get,1,wx.EXPAND)])
+        gs.AddMany([(post,1,wx.EXPAND), (get,1,wx.EXPAND), (postMessage)])
 
         
         fgs.AddGrowableCol(1, 1)
 
         hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         hbox.Add(gs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        #hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         panel.SetSizer(hbox)
 
         post.Bind(wx.EVT_BUTTON, self.onClickPostItem)
@@ -83,12 +88,14 @@ def postItem(username, password, subreddit, filename):
     cipher = AESCipher(KEYPASS)
     comment = cipher.encrypt_file(filename)
     post_encryption(filename, comment)
+    postMessage.SetLabel("Done")
 
 def getItem(username, password, subreddit, filename):
     loginMod(username,password,subreddit)
     cipher=AESCipher(KEYPASS)
     comment = get_decryption(filename)
     cipher.decrypt_file(comment, filename)
+    postMessage.SetLabel("Done")
     
 def loginMod(username, password, subreddit):
     trying = True
@@ -97,9 +104,9 @@ def loginMod(username, password, subreddit):
             _login(username,password)
             trying = False
         except praw.errors.InvalidUserPass:
-            print "wrong password"
+            postMessage.SetLabel("Wrong Password")
     while checkForMod(username, subreddit):
-        print "wrong subreddit"
+        postMessage.SetLabel("Not a Moderator of the Subreddit")
 
 def _login(username, password):
     r.login(username,password)
