@@ -28,7 +28,7 @@ def post_encryption(filename, encryption):
 
     #create submission if does not exist
     if does_not_exist:
-        file_post = r.submit(SUBREDDIT, filename, " ")
+        file_post = r.submit(SUBREDDIT, filename, " ", raise_captcha_exception=True)
     
     #going to be splitting the encryption since the comment limit is 10000 characters
     #this is the first-level comment
