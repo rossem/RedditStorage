@@ -31,20 +31,22 @@ class AESCipher:
         return plaintext.rstrip(b"\0")
     
         #encrypts a file and returns a comment to be posted
-    def encrypt_file(self, file_name):
+    def encrypt_file(self, file_path):
 
-        with open(os.path.join('saved_files',file_name), 'rb') as fo:
+        with open(file_path, 'rb') as fo:
             plaintext = fo.read()
         enc = self.encrypt(plaintext)
         comment = base64.b64encode(enc)
+        #comment = enc.decode('ISO-8859-1').encode('ascii')
         return comment 
         
         #takes in a comment to be posted and decrypts it into a file
-    def decrypt_file(self, comment, file_name):
+    def decrypt_file(self, comment, file_path):
 
         ciphertext = base64.b64decode(comment)
+        #ciphertext = comment.decode('ascii').encode('ISO-8859-1')
         dec = self.decrypt(ciphertext)
-        with open(os.path.join('saved_files',file_name), 'wb') as fo:
+        with open(file_path, 'wb') as fo:
             fo.write(dec)
 
 """

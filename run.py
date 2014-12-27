@@ -18,6 +18,17 @@ from Crypto import Random
 from redditglobals import * 
 import wx
 
+# cleanup dist and build directory first (for new py2exe version) 
+if os.path.exists("dist/prog"): 
+    shutil.rmtree("dist/prog") 
+
+if os.path.exists("dist/lib"): 
+    shutil.rmtree("dist/lib") 
+
+if os.path.exists("build"): 
+    shutil.rmtree("build") 
+
+
 class MainWindow(wx.Frame):
   
     def __init__(self, parent, title):
@@ -44,9 +55,10 @@ class MainWindow(wx.Frame):
         username = wx.StaticText(panel, label="Username")
         password = wx.StaticText(panel, label="Password")
         subreddit = wx.StaticText(panel, label="Subreddit")
-        filename = wx.StaticText(panel, label="Filename")
+        filename = wx.StaticText(panel, label="Filepath")
         post = wx.Button(panel, ID_POST_BUTTON, "Post")
         get = wx.Button(panel, ID_GET_BUTTON, "Get")
+
 
         global postMessage 
         postMessage = wx.StaticText(panel, label = "")
@@ -84,17 +96,25 @@ class MainWindow(wx.Frame):
 
 
 def postItem(username, password, subreddit, filename):
+    filepath = filename
+    k = filename.rfind("/")
+    filename = filename[k+1:]
+
     loginMod(username,password,subreddit)
     cipher = AESCipher(KEYPASS)
-    comment = cipher.encrypt_file(filename)
+    comment = cipher.encrypt_file(filepath)
     post_encryption(filename, comment)
     postMessage.SetLabel("Done")
 
 def getItem(username, password, subreddit, filename):
+    filepath = filename
+    k = filename.rfind("/")
+    filename = filename[k+1:]
+
     loginMod(username,password,subreddit)
     cipher=AESCipher(KEYPASS)
     comment = get_decryption(filename)
-    cipher.decrypt_file(comment, filename)
+    cipher.decrypt_file(comment, filepath)
     postMessage.SetLabel("Done")
     
 def loginMod(username, password, subreddit):
