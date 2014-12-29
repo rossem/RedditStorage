@@ -52,6 +52,7 @@ class MainWindow(wx.Frame):
 
         gs = wx.GridSizer(2,2,9,25)
 
+
         username = wx.StaticText(panel, label="Username")
         password = wx.StaticText(panel, label="Password")
         subreddit = wx.StaticText(panel, label="Subreddit")
@@ -107,6 +108,7 @@ def postItem(username, password, subreddit, filename):
     postMessage.SetLabel("Done")
 
 def getItem(username, password, subreddit, filename):
+    
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k+1:]
@@ -114,6 +116,12 @@ def getItem(username, password, subreddit, filename):
     loginMod(username,password,subreddit)
     cipher=AESCipher(KEYPASS)
     comment = get_decryption(filename)
+    
+    if filename[-1] == ")":
+        j = filename.rfind("(") - 1
+        n = len(filename) - j
+        filepath = filepath[:-n]
+
     cipher.decrypt_file(comment, filepath)
     postMessage.SetLabel("Done")
     
@@ -137,7 +145,7 @@ def checkForMod(user, subreddit):
     mods = subr.get_moderators()
 
     for mod in mods: 
-        if mod == user:
+        if mod == user.lower():
             return True
     return False 
 

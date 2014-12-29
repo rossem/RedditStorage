@@ -10,10 +10,11 @@ def post_encryption(filename, encryption):
     file_submissions = r.search(filename, SUBREDDIT)
 
     #getting the submission of the file if it exists already
+    count = 0
     for submission in file_submissions:
 
-        if submission.title.lower() == filename.lower():
-            file_post = submission
+        if filename.lower() in submission.title.lower():
+            count += 1
             does_not_exist = False
 
             #overwrite the file: need to delete the previous comments in this submission
@@ -29,6 +30,9 @@ def post_encryption(filename, encryption):
     #create submission if does not exist
     if does_not_exist:
         file_post = r.submit(SUBREDDIT, filename, " ", raise_captcha_exception=True)
+    else: 
+        file_post = r.submit(SUBREDDIT, filename + " (" + str(count) + ")", " ",raise_captcha_exception = True)
+
     
     #going to be splitting the encryption since the comment limit is 10000 characters
     #this is the first-level comment
