@@ -17,15 +17,6 @@ def post_encryption(filename, encryption):
             count += 1
             does_not_exist = False
 
-            #overwrite the file: need to delete the previous comments in this submission
-            forest_comments = submission.comments
-            flat_comments = praw.helpers.flatten_tree(forest_comments)
-
-            #for comment in flat_comments:
-            #    comment.delete()
-
-            #break out of the loop, found our submission
-            break
 
     #create submission if does not exist
     if does_not_exist:

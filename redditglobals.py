@@ -2,7 +2,7 @@ import praw
 
 global USERAGENT,USERNAME,PASSWORD,SUBREDDIT,r
 
-USERAGENT = "/u/wltrs testing reddit bot"
+USERAGENT = "reddit storage bot"
 USERNAME = ""
 PASSWORD = ""
 SUBREDDIT = "redditstoragetest"

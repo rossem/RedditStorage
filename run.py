@@ -52,7 +52,7 @@ class MainWindow(wx.Frame):
 
         gs = wx.GridSizer(2,2,9,25)
 
-
+        global username
         username = wx.StaticText(panel, label="Username")
         password = wx.StaticText(panel, label="Password")
         subreddit = wx.StaticText(panel, label="Subreddit")
@@ -64,7 +64,7 @@ class MainWindow(wx.Frame):
         global postMessage 
         postMessage = wx.StaticText(panel, label = "")
 
-
+        
         self.tc1 = wx.TextCtrl(panel)
         self.tc2 = wx.TextCtrl(panel, style = wx.TE_PASSWORD)
         self.tc3 = wx.TextCtrl(panel)
@@ -87,6 +87,8 @@ class MainWindow(wx.Frame):
         post.Bind(wx.EVT_BUTTON, self.onClickPostItem)
         get.Bind(wx.EVT_BUTTON, self.onClickGetItem)
 
+        
+
     def onClickPostItem(self,e):
         postItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
             self.tc4.GetValue())  
@@ -108,7 +110,6 @@ def postItem(username, password, subreddit, filename):
     postMessage.SetLabel("Done")
 
 def getItem(username, password, subreddit, filename):
-    
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k+1:]
