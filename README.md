@@ -1,7 +1,7 @@
 #RedditStorage
 =============
 
-######a cloud storage that uses Reddit as a backend. 
+######a cloud storage that uses Reddit as a backend
 
 =============
 
@@ -19,6 +19,6 @@ How to use it:
 
 1. RedditStorage uses an AES encryption algorithm which requires you to choose a password(e.g. "bunny). So choose one, and replace our default password (which is "hello") in key.py
 2. Run the program
-3. Enter your username, password and subreddit.
+3. Enter your username, password and subreddit
 4. When posting the file, make sure to enter the **full** path of the file. E.g. /Users/ross/Desktop/hello.txt
-5. When getting the file, choose where you want to save the file (/Users/ross/Desktop/folder) and add the files name (hello.txt), so your full entry would be /Users/ross/Desktop/folder/hello.txt
+5. When getting the file, choose where you want to save the file (/Users/ross/Desktop/folder) and add the file's name (hello.txt), so your full entry would be /Users/ross/Desktop/folder/hello.txt
