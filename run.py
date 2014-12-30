@@ -175,7 +175,7 @@ class MainNotebook(wx.Notebook):
 class MainWindow(wx.Frame):
 
     def __init__(self,parent,title):
-        super(MainWindow, self).__init__(parent, title=title, size=(300, 250))
+        super(MainWindow, self).__init__(parent, title=title, size=(300, 275))
         
         panel = wx.Panel(self)
 
