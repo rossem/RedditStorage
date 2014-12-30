@@ -29,52 +29,43 @@ if os.path.exists("build"):
     shutil.rmtree("build") 
 
 
-class MainWindow(wx.Frame):
-  
-    def __init__(self, parent, title):
-        super(MainWindow, self).__init__(parent, title=title, 
-            size=(300, 250))
-            
-        self.InitUI()
-        self.Centre()
-        self.Show()     
-        
-    def InitUI(self):
     
-        ID_POST_BUTTON = wx.NewId()
-        ID_GET_BUTTON = wx.NewId()
+class PostPanel(wx.Panel):
 
-        panel = wx.Panel(self)
+    def __init__(self,parent):
+        wx.Panel.__init__(self,parent=parent,id=wx.ID_ANY)
+
+        self.InitUI()
+
+    def InitUI(self):
+        ID_POST_BUTTON = wx.NewId()
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(4, 2, 9, 25)
-
+        fgs = wx.FlexGridSizer(4,2,9,25)        
         gs = wx.GridSizer(2,2,9,25)
 
         global username
-        username = wx.StaticText(panel, label="Username")
-        password = wx.StaticText(panel, label="Password")
-        subreddit = wx.StaticText(panel, label="Subreddit")
-        filename = wx.StaticText(panel, label="Filepath")
-        post = wx.Button(panel, ID_POST_BUTTON, "Post")
-        get = wx.Button(panel, ID_GET_BUTTON, "Get")
+        username = wx.StaticText(self, label="Username")
+        password = wx.StaticText(self, label="Password")
+        subreddit = wx.StaticText(self, label="Subreddit")
+        filename = wx.StaticText(self, label="Filepath")
+        post = wx.Button(self, ID_POST_BUTTON, "Post")        
 
+        global postMessage
+        postMessage = wx.StaticText(self,label = "")
 
-        global postMessage 
-        postMessage = wx.StaticText(panel, label = "")
+        self.tc1 = wx.TextCtrl(self)
+        self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
+        self.tc3 = wx.TextCtrl(self)
+        self.tc4 = wx.TextCtrl(self)
 
-        
-        self.tc1 = wx.TextCtrl(panel)
-        self.tc2 = wx.TextCtrl(panel, style = wx.TE_PASSWORD)
-        self.tc3 = wx.TextCtrl(panel)
-        self.tc4 = wx.TextCtrl(panel)
 
         fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
             (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
-            (self.tc4, 1, wx.EXPAND)])
+          (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(post,1,wx.EXPAND), (get,1,wx.EXPAND), (postMessage)])
+        gs.AddMany([(post,1,wx.EXPAND), (postMessage)])
 
         
         fgs.AddGrowableCol(1, 1)
@@ -82,20 +73,122 @@ class MainWindow(wx.Frame):
         hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         hbox.Add(gs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         #hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
-        panel.SetSizer(hbox)
+        self.SetSizer(hbox)
 
         post.Bind(wx.EVT_BUTTON, self.onClickPostItem)
-        get.Bind(wx.EVT_BUTTON, self.onClickGetItem)
 
-        
+    
 
     def onClickPostItem(self,e):
         postItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
             self.tc4.GetValue())  
-    
+
+class GetPanel(wx.Panel):
+
+    def __init__(self,parent):
+        wx.Panel.__init__(self,parent=parent,id=wx.ID_ANY)
+
+        self.InitUI()
+
+    def InitUI(self):
+        ID_GET_BUTTON = wx.NewId()
+
+        hbox = wx.BoxSizer(wx.VERTICAL)
+
+        fgs = wx.FlexGridSizer(4,2,9,25)        
+        gs = wx.GridSizer(2,2,9,25)
+
+        global username
+        username = wx.StaticText(self, label="Username")
+        password = wx.StaticText(self, label="Password")
+        subreddit = wx.StaticText(self, label="Subreddit")
+        filename = wx.StaticText(self, label="Filepath")
+        get = wx.Button(self, ID_GET_BUTTON, "Get")        
+
+        global postMessage
+        postMessage = wx.StaticText(self,label = "")
+
+        self.tc1 = wx.TextCtrl(self)
+        self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
+        self.tc3 = wx.TextCtrl(self)
+        self.tc4 = wx.TextCtrl(self)
+
+
+        fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
+            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+          (self.tc4, 1, wx.EXPAND)])
+
+        gs.AddMany([(get,1,wx.EXPAND), (postMessage)])
+
+        
+        fgs.AddGrowableCol(1, 1)
+
+        hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        hbox.Add(gs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        #hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        self.SetSizer(hbox)
+
+        get.Bind(wx.EVT_BUTTON, self.onClickGetItem)
+
     def onClickGetItem(self, e):
         getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
-            self.tc4.GetValue())  
+            self.tc4.GetValue()) 
+
+
+class MainNotebook(wx.Notebook):
+
+    def __init__(self, parent):
+        wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=
+                             wx.BK_DEFAULT
+                             #wx.BK_TOP 
+                             #wx.BK_BOTTOM
+                             #wx.BK_LEFT
+                             #wx.BK_RIGHT
+                             )
+
+        self.InitUI()
+
+    def InitUI(self):
+        tabOne = PostPanel(self)
+        self.AddPage(tabOne, "Post")
+
+        tabTwo = GetPanel(self)
+        self.AddPage(tabTwo, "Get")
+ 
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
+        self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
+
+    def OnPageChanged(self, event):
+        old = event.GetOldSelection()
+        new = event.GetSelection()
+        sel = self.GetSelection()
+        print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        event.Skip()
+
+    def OnPageChanging(self, event):
+        old = event.GetOldSelection()
+        new = event.GetSelection()
+        sel = self.GetSelection()
+        print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        event.Skip()
+        
+class MainWindow(wx.Frame):
+
+    def __init__(self,parent,title):
+        super(MainWindow, self).__init__(parent, title=title, size=(300, 250))
+        
+        panel = wx.Panel(self)
+
+        notebook = MainNotebook(panel)
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.Add(notebook, 1, wx.ALL|wx.EXPAND, 5)
+        panel.SetSizer(sizer)
+
+        self.Layout()
+        self.Centre() 
+        self.Show()
+            
+#------------------------------------------------------------------------------
 
 
 def postItem(username, password, subreddit, filename):
