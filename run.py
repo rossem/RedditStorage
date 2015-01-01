@@ -28,6 +28,7 @@ if os.path.exists("dist/lib"):
 if os.path.exists("build"): 
     shutil.rmtree("build") 
 
+wildcard = "All files (*.*)|*.*"
 
     
 class PostPanel(wx.Panel):
@@ -39,10 +40,11 @@ class PostPanel(wx.Panel):
 
     def InitUI(self):
         ID_POST_BUTTON = wx.NewId()
+        ID_BROWSE_FILE_BUTTON = wx.NewId()
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(4,2,9,25)        
+        fgs = wx.FlexGridSizer(4,2,9,20)        
         gs = wx.GridSizer(2,2,9,25)
 
         global username
@@ -51,7 +53,7 @@ class PostPanel(wx.Panel):
         subreddit = wx.StaticText(self, label="Subreddit")
         filename = wx.StaticText(self, label="Filepath")
         post = wx.Button(self, ID_POST_BUTTON, "Post")        
-
+        browseFile=wx.Button(self, ID_BROWSE_FILE_BUTTON, "Browse File")
         global postMessage
         postMessage = wx.StaticText(self,label = "")
 
@@ -65,7 +67,7 @@ class PostPanel(wx.Panel):
             (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
           (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(post,1,wx.EXPAND), (postMessage)])
+        gs.AddMany([(post,1,wx.EXPAND),(browseFile,1,wx.EXPAND), (postMessage)])
 
         
         fgs.AddGrowableCol(1, 1)
@@ -75,9 +77,44 @@ class PostPanel(wx.Panel):
         #hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         self.SetSizer(hbox)
 
-        post.Bind(wx.EVT_BUTTON, self.onClickPostItem)
-
+        post.Bind(wx.EVT_BUTTON, self.onClickPostItem, post)
+        browseFile.Bind(wx.EVT_BUTTON, self.onClickBrowseFile, browseFile)
     
+    def onClickBrowseFile(self,e):
+        # Create the dialog. In this case the current directory is forced as the starting
+        # directory for the dialog, and no default file name is forced. This can easilly
+        # be changed in your program. This is an 'open' dialog, and allows multitple
+        # file selections as well.
+        #
+        # Finally, if the directory is changed in the process of getting files, this
+        # dialog is set up to change the current working directory to the path chosen.
+        dlg = wx.FileDialog(
+            self, message="Choose a file",
+            defaultDir=os.getcwd(), 
+            defaultFile="",
+            wildcard=wildcard,
+            style=wx.OPEN | wx.MULTIPLE | wx.CHANGE_DIR
+            )
+
+        # Show the dialog and retrieve the user response. If it is the OK response, 
+        # process the data.
+        if dlg.ShowModal() == wx.ID_OK:
+            #Use GetPaths() for multiple files
+            paths = dlg.GetPath()
+            self.tc4.SetValue(paths)
+
+            #self.log.WriteText('You selected %d files:' % len(paths))
+
+            #for path in paths:
+            #   self.log.WriteText('           %s\n' % path)
+
+        # Compare this with the debug above; did we change working dirs?
+        #self.log.WriteText("CWD: %s\n" % os.getcwd())
+
+        # Destroy the dialog. Don't do this until you are done with it!
+        # BAD things can happen otherwise!
+        dlg.Destroy()
+
 
     def onClickPostItem(self,e):
         postItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
@@ -92,10 +129,10 @@ class GetPanel(wx.Panel):
 
     def InitUI(self):
         ID_GET_BUTTON = wx.NewId()
-
+        ID_SAVE_FILE_BUTTON = wx.NewId()
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(4,2,9,25)        
+        fgs = wx.FlexGridSizer(4,2,9,20)        
         gs = wx.GridSizer(2,2,9,25)
 
         global username
@@ -104,6 +141,7 @@ class GetPanel(wx.Panel):
         subreddit = wx.StaticText(self, label="Subreddit")
         filename = wx.StaticText(self, label="Filepath")
         get = wx.Button(self, ID_GET_BUTTON, "Get")        
+        saveFile = wx.Button(self,ID_SAVE_FILE_BUTTON, "Save File As")
 
         global postMessage
         postMessage = wx.StaticText(self,label = "")
@@ -118,17 +156,60 @@ class GetPanel(wx.Panel):
             (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
           (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(get,1,wx.EXPAND), (postMessage)])
+        gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (postMessage)])
 
         
         fgs.AddGrowableCol(1, 1)
 
         hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         hbox.Add(gs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
-        #hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        
         self.SetSizer(hbox)
 
         get.Bind(wx.EVT_BUTTON, self.onClickGetItem)
+        saveFile.Bind(wx.EVT_BUTTON,self.onClickSaveItem)
+
+    def onClickSaveItem(self,e):
+        #self.log.WriteText("CWD: %s\n" % os.getcwd())
+
+        # Create the dialog. In this case the current directory is forced as the starting
+        # directory for the dialog, and no default file name is forced. This can easilly
+        # be changed in your program. This is an 'save' dialog.
+        dlg = wx.FileDialog(
+            self, message="Save file as ...", defaultDir=os.getcwd(), 
+            defaultFile="", wildcard=wildcard, style=wx.SAVE
+            )
+        # This sets the default filter that the user will initially see. Otherwise,
+        # the first filter in the list will be used by default.
+        dlg.SetFilterIndex(2)
+
+        # Show the dialog and retrieve the user response. If it is the OK response, 
+        # process the data.
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath()
+            self.tc4.SetValue(path)
+
+            # Normally, at this point you would save your data using the file and path
+            # data that the user provided to you, but since we didn't actually start
+            # with any data to work with, that would be difficult.
+            # 
+            # The code to do so would be similar to this, assuming 'data' contains
+            # the data you want to save:
+            #
+            # fp = file(path, 'w') # Create file anew
+            # fp.write(data)
+            # fp.close()
+            #
+            # You might want to add some error checking
+
+        # Note that the current working dir didn't change. This is good since
+        # that's the way we set it up.
+        #self.log.WriteText("CWD: %s\n" % os.getcwd())
+
+        # Destroy the dialog. Don't do this until you are done with it!
+        # BAD things can happen otherwise!
+        dlg.Destroy()
+
 
     def onClickGetItem(self, e):
         getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
@@ -175,7 +256,7 @@ class MainNotebook(wx.Notebook):
 class MainWindow(wx.Frame):
 
     def __init__(self,parent,title):
-        super(MainWindow, self).__init__(parent, title=title, size=(300, 275))
+        super(MainWindow, self).__init__(parent, title=title, size=(300, 290))
         
         panel = wx.Panel(self)
 
