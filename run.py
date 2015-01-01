@@ -143,8 +143,8 @@ class GetPanel(wx.Panel):
         get = wx.Button(self, ID_GET_BUTTON, "Get")        
         saveFile = wx.Button(self,ID_SAVE_FILE_BUTTON, "Save File As")
 
-        global postMessage
-        postMessage = wx.StaticText(self,label = "")
+        global postMessage1
+        postMessage1 = wx.StaticText(self,label = "")
 
         self.tc1 = wx.TextCtrl(self)
         self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
@@ -156,7 +156,7 @@ class GetPanel(wx.Panel):
             (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
           (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (postMessage)])
+        gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (postMessage1)])
 
         
         fgs.AddGrowableCol(1, 1)
@@ -282,6 +282,7 @@ def postItem(username, password, subreddit, filename):
     comment = cipher.encrypt_file(filepath)
     post_encryption(filename, comment)
     postMessage.SetLabel("Done")
+    postMessage1.SetLabel("Done")
 
 def getItem(username, password, subreddit, filename):
     filepath = filename
@@ -298,6 +299,7 @@ def getItem(username, password, subreddit, filename):
         filepath = filepath[:-n]
 
     cipher.decrypt_file(comment, filepath)
+    postMessage1.SetLabel("Done")
     postMessage.SetLabel("Done")
     
 def loginMod(username, password, subreddit):
@@ -308,8 +310,10 @@ def loginMod(username, password, subreddit):
             trying = False
         except praw.errors.InvalidUserPass:
             postMessage.SetLabel("Wrong Password")
+            postMessage1.SetLabel("Wrong Password")
     while checkForMod(username, subreddit):
         postMessage.SetLabel("Not a Moderator of the Subreddit")
+        postMessage1.SetLabel("Not a Moderator of the Subreddit")
 
 def _login(username, password):
     r.login(username,password)
