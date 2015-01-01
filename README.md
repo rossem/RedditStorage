@@ -1,9 +1,12 @@
 #RedditStorage
 <<<<<<< HEAD
+<<<<<<< HEAD
 ######a cloud storage that uses Reddit as a backend. 
 =======
 =============
 
+=======
+>>>>>>> f6b387c528e2c3de8e8fb515d874b53d5caeb02b
 ######a cloud storage that uses Reddit as a backend
 >>>>>>> 2b549bb3a8d6a14640d5b3d54b8e7be605d347a1
 
