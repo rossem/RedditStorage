@@ -1,10 +1,5 @@
 #RedditStorage
 ######a cloud storage that uses Reddit as a backend. 
-=======
-=============
-
-=======
-######a cloud storage that uses Reddit as a backend
 
 =============
 
