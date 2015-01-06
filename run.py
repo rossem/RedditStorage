@@ -9,7 +9,6 @@ import getpass
 from crypt import AESCipher
 import hashlib
 import os
-from key import *
 import base64
 
 from Crypto.Cipher import AES
@@ -51,6 +50,7 @@ class PostPanel(wx.Panel):
         username = wx.StaticText(self, label="Username")
         password = wx.StaticText(self, label="Password")
         subreddit = wx.StaticText(self, label="Subreddit")
+        KEYPASS = wx.StaticText(self, label = "Encryption key")
         filename = wx.StaticText(self, label="Filepath")
         post = wx.Button(self, ID_POST_BUTTON, "Post")        
         browseFile=wx.Button(self, ID_BROWSE_FILE_BUTTON, "Browse File")
@@ -61,10 +61,11 @@ class PostPanel(wx.Panel):
         self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
         self.tc3 = wx.TextCtrl(self)
         self.tc4 = wx.TextCtrl(self)
+        self.tc5 = wx.TextCtrl(self)
 
 
         fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
-            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
           (self.tc4, 1, wx.EXPAND)])
 
         gs.AddMany([(post,1,wx.EXPAND),(browseFile,1,wx.EXPAND), (postMessage)])
@@ -118,7 +119,7 @@ class PostPanel(wx.Panel):
 
     def onClickPostItem(self,e):
         postItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
-            self.tc4.GetValue())  
+            self.tc4.GetValue(), self.tc5.GetValue())  
 
 class GetPanel(wx.Panel):
 
@@ -140,6 +141,7 @@ class GetPanel(wx.Panel):
         password = wx.StaticText(self, label="Password")
         subreddit = wx.StaticText(self, label="Subreddit")
         file_to_get = wx.StaticText(self, label="File to get")
+        KEYPASS = wx.StaticText(self, label="Encryption key")
         filename = wx.StaticText(self, label="Filepath")
         get = wx.Button(self, ID_GET_BUTTON, "Get")        
         saveFile = wx.Button(self,ID_SAVE_FILE_BUTTON, "Save File As")
@@ -152,11 +154,13 @@ class GetPanel(wx.Panel):
         self.tc3 = wx.TextCtrl(self)
         self.tc4 = wx.TextCtrl(self)
         self.tc5 = wx.TextCtrl(self)
+        self.tc6 = wx.TextCtrl(self)
 
 
         fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
-            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (file_to_get, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
-          (self.tc4, 1, wx.EXPAND)])
+            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), 
+            (file_to_get, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
+            (self.tc6, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.tc4, 1, wx.EXPAND)])
 
         gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (postMessage1)])
 
@@ -215,7 +219,7 @@ class GetPanel(wx.Panel):
 
     def onClickGetItem(self, e):
         getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
-            self.tc4.GetValue(), self.tc5.GetValue()) 
+            self.tc4.GetValue(), self.tc5.GetValue(), self.tc6.GetValue()) 
 
 
 class MainNotebook(wx.Notebook):
@@ -258,7 +262,7 @@ class MainNotebook(wx.Notebook):
 class MainWindow(wx.Frame):
 
     def __init__(self,parent,title):
-        super(MainWindow, self).__init__(parent, title=title, size=(450, 320))
+        super(MainWindow, self).__init__(parent, title=title, size=(500, 375))
         
         panel = wx.Panel(self)
 
@@ -274,7 +278,7 @@ class MainWindow(wx.Frame):
 #------------------------------------------------------------------------------
 
 
-def postItem(username, password, subreddit, filename):
+def postItem(username, password, subreddit, filename, KEYPASS):
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k+1:]
@@ -286,7 +290,7 @@ def postItem(username, password, subreddit, filename):
     postMessage.SetLabel("Done")
     postMessage1.SetLabel("Done")
 
-def getItem(username, password, subreddit, filename, file_to_get):
+def getItem(username, password, subreddit, filename, file_to_get, KEYPASS):
 
     filepath = filename
     #k = filename.rfind("/")
