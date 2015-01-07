@@ -17,6 +17,7 @@ from Crypto import Random
 from redditglobals import * 
 import wx
 
+
 # cleanup dist and build directory first (for new py2exe version) 
 if os.path.exists("dist/prog"): 
     shutil.rmtree("dist/prog") 
@@ -43,7 +44,7 @@ class PostPanel(wx.Panel):
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(4,2,9,20)        
+        fgs = wx.FlexGridSizer(5,2,9,20)        
         gs = wx.GridSizer(2,2,9,25)
 
         global username
@@ -131,10 +132,13 @@ class GetPanel(wx.Panel):
     def InitUI(self):
         ID_GET_BUTTON = wx.NewId()
         ID_SAVE_FILE_BUTTON = wx.NewId()
+        ID_GET_REDDIT_LIST_BUTTON = wx.NewId()
+
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(4,2,9,20)        
+        fgs = wx.FlexGridSizer(6,2,9,20)        
         gs = wx.GridSizer(2,2,9,25)
+        
 
         global username
         username = wx.StaticText(self, label="Username")
@@ -145,6 +149,7 @@ class GetPanel(wx.Panel):
         filename = wx.StaticText(self, label="Filepath")
         get = wx.Button(self, ID_GET_BUTTON, "Get")        
         saveFile = wx.Button(self,ID_SAVE_FILE_BUTTON, "Save File As")
+        getRedditList = wx.Button(self, ID_GET_REDDIT_LIST_BUTTON, "Retrieve List of Stored Files ")
 
         global postMessage1
         postMessage1 = wx.StaticText(self,label = "")
@@ -162,7 +167,8 @@ class GetPanel(wx.Panel):
             (file_to_get, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
             (self.tc6, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.tc4, 1, wx.EXPAND)])
 
-        gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (postMessage1)])
+        gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (getRedditList,1,wx.EXPAND), (postMessage1)])
+
 
         
         fgs.AddGrowableCol(1, 1)
@@ -170,10 +176,12 @@ class GetPanel(wx.Panel):
         hbox.Add(fgs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         hbox.Add(gs, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
         
+        
         self.SetSizer(hbox)
 
         get.Bind(wx.EVT_BUTTON, self.onClickGetItem)
         saveFile.Bind(wx.EVT_BUTTON,self.onClickSaveItem)
+        getRedditList.Bind(wx.EVT_BUTTON, self.onClickGetRedditList)
 
     def onClickSaveItem(self,e):
         #self.log.WriteText("CWD: %s\n" % os.getcwd())
@@ -220,6 +228,7 @@ class GetPanel(wx.Panel):
     def onClickGetItem(self, e):
         getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
             self.tc4.GetValue(), self.tc5.GetValue(), self.tc6.GetValue()) 
+    def onClickGetRedditList(self, e):
 
 
 class MainNotebook(wx.Notebook):
@@ -249,14 +258,14 @@ class MainNotebook(wx.Notebook):
         old = event.GetOldSelection()
         new = event.GetSelection()
         sel = self.GetSelection()
-        print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        #print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
         event.Skip()
 
     def OnPageChanging(self, event):
         old = event.GetOldSelection()
         new = event.GetSelection()
         sel = self.GetSelection()
-        print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
+        #print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
         event.Skip()
         
 class MainWindow(wx.Frame):
