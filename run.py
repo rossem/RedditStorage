@@ -16,7 +16,7 @@ from Crypto import Random
 
 from redditglobals import * 
 import wx
-
+from wx.lib.pubsub import pub 
 
 # cleanup dist and build directory first (for new py2exe version) 
 if os.path.exists("dist/prog"): 
@@ -29,8 +29,90 @@ if os.path.exists("build"):
     shutil.rmtree("build") 
 
 wildcard = "All files (*.*)|*.*"
-
     
+class RedditList(wx.Frame):
+    
+
+    def __init__(self):
+        wx.Frame.__init__(self,None,wx.ID_ANY,"Files Stored", size = (300, 400))
+        self.panel = wx.Panel(self)
+        pub.subscribe(self.subredditListener, "subredditListener")
+        self.InitUI()
+
+    def InitUI(self):
+
+        self.fileList = wx.ListCtrl(self.panel, size=(-1,300), style = wx.LC_REPORT
+            |wx.EXPAND)
+        self.fileList.InsertColumn(0,"File Name", width = 500)
+
+        self.gs = wx.GridSizer(1,2,0,0)
+
+        submitButton = wx.Button(self.panel, label = "Submit")
+        submitButton.Bind(wx.EVT_BUTTON, self.onSubmit)
+        closeButton = wx.Button(self.panel, label= "Close")
+        closeButton.Bind(wx.EVT_BUTTON, self.onClose)
+
+        self.gs.Add(submitButton)
+        self.gs.Add(closeButton)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        flags = wx.ALL|wx.EXPAND
+        sizer.Add(self.fileList, 0, wx.ALL|wx.EXPAND, 5)
+        
+        sizer.Add(self.gs, flag=wx.ALIGN_BOTTOM|wx.EXPAND|wx.ALL, border=5)
+        self.panel.SetSizer(sizer)
+
+    def subredditListener(self, subredditName, username, password):
+        r = praw.Reddit("reddit storage bot " + username)
+        r.login(username, password)
+        subreddit = r.get_subreddit(subredditName)
+        global posts
+        posts = subreddit.get_new(limit=1000)
+        index = 0
+        self.myRowDict = {}
+        for x in posts:
+            print str(x)
+            self.fileList.InsertStringItem(index, x.title)
+            self.myRowDict[index] = x
+            index+=1
+        print "done"
+
+
+
+    def onClose(self, event):
+        self.Close()
+
+    def onSubmit(self, event):
+        pub.sendMessage("fileListener", fileName = self.myRowDict[get_selected_items(self.fileList)]
+        self.Close()
+
+
+def get_selected_items(list_control):
+    
+    #Gets the selected items for the list control.
+    #Selection is returned as a list of selected indices,
+    #low to high.
+    
+    selection = []
+
+    # start at -1 to get the first selected item
+    current = -1
+    while True:
+        next = GetNextSelected(list_control, current)
+        if next == -1:
+            return selection
+
+        selection.append(next)
+        current = next
+
+def GetNextSelected(list_control, current):
+    #Returns next selected item, or -1 when no more
+
+    return list_control.GetNextItem(current,
+                            wx.LIST_NEXT_ALL,
+                            wx.LIST_STATE_SELECTED)
+
+
 class PostPanel(wx.Panel):
 
     def __init__(self,parent):
@@ -44,8 +126,8 @@ class PostPanel(wx.Panel):
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(5,2,9,20)        
-        gs = wx.GridSizer(2,2,9,25)
+        fgs = wx.FlexGridSizer(5,2,9,15)        
+        gs = wx.GridSizer(2,2,9,10)
 
         global username
         username = wx.StaticText(self, label="Username")
@@ -126,8 +208,11 @@ class GetPanel(wx.Panel):
 
     def __init__(self,parent):
         wx.Panel.__init__(self,parent=parent,id=wx.ID_ANY)
-
+        pub.subscribe(self.fileListener, "fileListener")
         self.InitUI()
+
+    def fileListener(self, fileName):
+        print fileName
 
     def InitUI(self):
         ID_GET_BUTTON = wx.NewId()
@@ -136,8 +221,8 @@ class GetPanel(wx.Panel):
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
-        fgs = wx.FlexGridSizer(6,2,9,20)        
-        gs = wx.GridSizer(2,2,9,25)
+        fgs = wx.FlexGridSizer(6,2,9,15)        
+        gs = wx.GridSizer(2,2,9,10)
         
 
         global username
@@ -229,7 +314,10 @@ class GetPanel(wx.Panel):
         getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
             self.tc4.GetValue(), self.tc5.GetValue(), self.tc6.GetValue()) 
     def onClickGetRedditList(self, e):
-
+        frame = RedditList()
+        pub.sendMessage("subredditListener", subredditName = self.tc3.GetValue()
+            , username = self.tc1.GetValue(), password = self.tc2.GetValue())
+        frame.Show()
 
 class MainNotebook(wx.Notebook):
 
