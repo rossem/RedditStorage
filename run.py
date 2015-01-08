@@ -69,11 +69,11 @@ class RedditList(wx.Frame):
         global posts
         posts = subreddit.get_new(limit=1000)
         index = 0
-        self.myRowDict = {}
+        self.myRowDict = {} #dictionary used for retrival later
         for x in posts:
             print str(x)
             self.fileList.InsertStringItem(index, x.title)
-            self.myRowDict[index] = x
+            self.myRowDict[index] = x.title
             index+=1
         print "done"
 
@@ -83,7 +83,7 @@ class RedditList(wx.Frame):
         self.Close()
 
     def onSubmit(self, event):
-        pub.sendMessage("fileListener", fileName = self.myRowDict[get_selected_items(self.fileList)]
+        pub.sendMessage("fileListener", fileName = self.myRowDict[get_selected_items(self.fileList)[0]])
         self.Close()
 
 
@@ -140,16 +140,15 @@ class PostPanel(wx.Panel):
         global postMessage
         postMessage = wx.StaticText(self,label = "")
 
-        self.tc1 = wx.TextCtrl(self)
-        self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
-        self.tc3 = wx.TextCtrl(self)
-        self.tc4 = wx.TextCtrl(self)
-        self.tc5 = wx.TextCtrl(self)
+        self.usernameField = wx.TextCtrl(self)
+        self.passwordField = wx.TextCtrl(self, style = wx.TE_PASSWORD)
+        self.subredditField = wx.TextCtrl(self)
+        self.filepathField = wx.TextCtrl(self)
+        self.keypassField = wx.TextCtrl(self)
 
-
-        fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
-            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
-          (self.tc4, 1, wx.EXPAND)])
+        fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password), 
+            (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+          (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(post,1,wx.EXPAND),(browseFile,1,wx.EXPAND), (postMessage)])
 
@@ -185,7 +184,7 @@ class PostPanel(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             #Use GetPaths() for multiple files
             paths = dlg.GetPath()
-            self.tc4.SetValue(paths)
+            self.filepathField.SetValue(paths)
 
             #self.log.WriteText('You selected %d files:' % len(paths))
 
@@ -201,8 +200,8 @@ class PostPanel(wx.Panel):
 
 
     def onClickPostItem(self,e):
-        postItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
-            self.tc4.GetValue(), self.tc5.GetValue())  
+        postItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+            self.filepathField.GetValue(), self.keypassField.GetValue())  
 
 class GetPanel(wx.Panel):
 
@@ -212,7 +211,7 @@ class GetPanel(wx.Panel):
         self.InitUI()
 
     def fileListener(self, fileName):
-        print fileName
+        self.fileToGetField.SetValue(fileName)
 
     def InitUI(self):
         ID_GET_BUTTON = wx.NewId()
@@ -239,18 +238,18 @@ class GetPanel(wx.Panel):
         global postMessage1
         postMessage1 = wx.StaticText(self,label = "")
 
-        self.tc1 = wx.TextCtrl(self)
-        self.tc2 = wx.TextCtrl(self, style = wx.TE_PASSWORD)
-        self.tc3 = wx.TextCtrl(self)
-        self.tc4 = wx.TextCtrl(self)
-        self.tc5 = wx.TextCtrl(self)
-        self.tc6 = wx.TextCtrl(self)
+        self.usernameField = wx.TextCtrl(self)
+        self.passwordField = wx.TextCtrl(self, style = wx.TE_PASSWORD)
+        self.subredditField = wx.TextCtrl(self)
+        self.fileToGetField = wx.TextCtrl(self)
+        self.keypassField = wx.TextCtrl(self)
+        self.filepathField = wx.TextCtrl(self)
 
 
-        fgs.AddMany([(username), (self.tc1, 1, wx.EXPAND), (password), 
-            (self.tc2, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.tc3, 1, wx.EXPAND), 
-            (file_to_get, 1, wx.EXPAND), (self.tc5, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
-            (self.tc6, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.tc4, 1, wx.EXPAND)])
+        fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password), 
+            (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND), 
+            (file_to_get, 1, wx.EXPAND), (self.fileToGetField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
+            (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(get,1,wx.EXPAND),(saveFile,1,wx.EXPAND), (getRedditList,1,wx.EXPAND), (postMessage1)])
 
@@ -276,8 +275,9 @@ class GetPanel(wx.Panel):
         # be changed in your program. This is an 'save' dialog.
         dlg = wx.FileDialog(
             self, message="Save file as ...", defaultDir=os.getcwd(), 
-            defaultFile="", wildcard=wildcard, style=wx.SAVE
+            defaultFile="", wildcard=wildcard, style=wx.SAVE,
             )
+        dlg.SetFilename(self.fileToGetField.GetValue())
         # This sets the default filter that the user will initially see. Otherwise,
         # the first filter in the list will be used by default.
         dlg.SetFilterIndex(2)
@@ -286,7 +286,7 @@ class GetPanel(wx.Panel):
         # process the data.
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
-            self.tc4.SetValue(path)
+            self.filepathField.SetValue(path)
 
             # Normally, at this point you would save your data using the file and path
             # data that the user provided to you, but since we didn't actually start
@@ -311,12 +311,12 @@ class GetPanel(wx.Panel):
 
 
     def onClickGetItem(self, e):
-        getItem(self.tc1.GetValue(), self.tc2.GetValue(), self.tc3.GetValue(),
-            self.tc4.GetValue(), self.tc5.GetValue(), self.tc6.GetValue()) 
+        getItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+            self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue()) 
     def onClickGetRedditList(self, e):
         frame = RedditList()
-        pub.sendMessage("subredditListener", subredditName = self.tc3.GetValue()
-            , username = self.tc1.GetValue(), password = self.tc2.GetValue())
+        pub.sendMessage("subredditListener", subredditName = self.subredditField.GetValue()
+            , username = self.usernameField.GetValue(), password = self.passwordField.GetValue())
         frame.Show()
 
 class MainNotebook(wx.Notebook):
