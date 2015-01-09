@@ -29,9 +29,6 @@ Screenshots
 
 ===========
 
-![Alt text](screenshot1.png "Post")
-![Alt text](screenshot2.png "Get")
-![Alt text](screenshot2.png "See which files are uploaded")
-![Alt text](screenshot2.png "README.md uploaded")
-![Alt text](screenshot2.png "Big file made up of linked comments")
+![Alt text](screenshot1.png "Post")![Alt text](screenshot2.png "Get")![Alt text](screenshot3.png "See which files are uploaded")
+![Alt text](screenshot4.png "README.md uploaded")![Alt text](screenshot5.png "Big file made up of linked comments")
 
