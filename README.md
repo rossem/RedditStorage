@@ -26,6 +26,8 @@ How to use it:
 
 
 Screenshots
+![ScreenShot](https://raw.github.com/wltrs/redditstoragetest/master/screenshot1.png)
+
 
 ===========
 
