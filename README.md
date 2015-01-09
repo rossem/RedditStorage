@@ -26,8 +26,8 @@ How to use it:
 
 
 Screenshots
-![screenshot1](https://raw.github.com/Rossem/redditstoragetest/master/screenshot2.png)
-![screenshot2](https://raw.github.com/Rossem/redditstoragetest/master/screenshot2.png)
+![screenshot1](https://raw.github.com/Rossem/RedditStorage/master/screenshot2.png)
+![screenshot2](https://raw.github.com/Rossem/RedditStorage/master/screenshot2.png)
 
 
 ===========
