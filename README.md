@@ -26,12 +26,13 @@ How to use it:
 
 
 Screenshots
-![screenshot1](https://raw.github.com/Rossem/RedditStorage/master/screenshot2.png)
-![screenshot2](https://raw.github.com/Rossem/RedditStorage/master/screenshot2.png)
 
 
 ===========
 
-![Alt text](screenshot1.png "Post")![Alt text](screenshot2.png "Get")![Alt text](screenshot3.png "See which files are uploaded")
-![Alt text](screenshot4.png "README.md uploaded")![Alt text](screenshot5.png "Big file made up of linked comments")
+![ss1](screenshot1.png "Post")
+![ss2](screenshot2.png "Get")
+![ss3](screenshot3.png "See which files are uploaded")
+![ss4](screenshot4.png "README.md uploaded")
+![ss5](screenshot5.png "Big file made up of linked comments")
 
