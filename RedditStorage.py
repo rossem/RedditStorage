@@ -19,14 +19,14 @@ import wx
 from wx.lib.pubsub import pub 
 
 # cleanup dist and build directory first (for new py2exe version) 
-if os.path.exists("dist/prog"): 
-    shutil.rmtree("dist/prog") 
+#if os.path.exists("dist/prog"): 
+ #   shutil.rmtree("dist/prog") 
 
-if os.path.exists("dist/lib"): 
-    shutil.rmtree("dist/lib") 
+#if os.path.exists("dist/lib"): 
+ #   shutil.rmtree("dist/lib") 
 
-if os.path.exists("build"): 
-    shutil.rmtree("build") 
+#if os.path.exists("build"): 
+ #   shutil.rmtree("build") 
 
 wildcard = "All files (*.*)|*.*"
     
@@ -51,6 +51,10 @@ class RedditList(wx.Frame):
         submitButton.Bind(wx.EVT_BUTTON, self.onSubmit)
         closeButton = wx.Button(self.panel, label= "Close")
         closeButton.Bind(wx.EVT_BUTTON, self.onClose)
+
+        saveButton = wx.Button(self.panel, label="Save Fields")
+
+        generateButton = wx.Button(self.panel, label = "Generate Subreddit")
 
         self.gs.Add(submitButton)
         self.gs.Add(closeButton)
@@ -200,7 +204,18 @@ class PostPanel(wx.Panel):
 
 
     def onClickPostItem(self,e):
-        postItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+        if (self.usernameField.IsEmpty()):
+            postMessage.SetLabel("No Username Specified")
+        elif (self.passwordField.IsEmpty()):
+            postMessage.SetLabel("No Password Entered")
+        elif (self.subredditField.IsEmpty()):
+            postMessage.SetLabel("No Subreddit Specified")
+        elif (self.keypassField.IsEmpty()):
+            postMessage.SetLabel("No Encryption Key Specified")
+        elif (self.filepathField.IsEmpty()):
+            postMessage.SetLabel("No Filepath Specified")
+        else:
+            postItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
             self.filepathField.GetValue(), self.keypassField.GetValue())  
 
 class GetPanel(wx.Panel):
@@ -311,13 +326,30 @@ class GetPanel(wx.Panel):
 
 
     def onClickGetItem(self, e):
-        getItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+        if (self.usernameField.IsEmpty()):
+            postMessage1.SetLabel("No Username Specified")
+        elif (self.passwordField.IsEmpty()):
+            postMessage1.SetLabel("No Password Entered")
+        elif (self.subredditField.IsEmpty()):
+            postMessage1.SetLabel("No Subreddit Specified")
+        elif (self.fileToGetField.IsEmpty()):
+            postMessage1.SetLabel("No File Specified")
+        elif (self.keypassField.IsEmpty()):
+            postMessage1.SetLabel("No Encryption Key Specified")
+        elif (self.filepathField.IsEmpty()):
+            postMessage1.SetLabel("No Filepath Specified")
+        else:
+            getItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
             self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue()) 
     def onClickGetRedditList(self, e):
-        frame = RedditList()
-        pub.sendMessage("subredditListener", subredditName = self.subredditField.GetValue()
+        if(self.subredditField.IsEmpty() is False):
+            print self.subredditField.GetValue()
+            frame = RedditList()
+            pub.sendMessage("subredditListener", subredditName = self.subredditField.GetValue()
             , username = self.usernameField.GetValue(), password = self.passwordField.GetValue())
-        frame.Show()
+            frame.Show()
+        else:
+            postMessage1.SetLabel("No Subreddit Specified")
 
 class MainNotebook(wx.Notebook):
 
