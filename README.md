@@ -41,6 +41,6 @@ To Do
 
 ==============
 
-*Save username/password between sessions
-*Upload as webapp
-*Auto generate subreddits
+* Save username/password between sessions
+* Upload as webapp
+* Auto generate subreddits
