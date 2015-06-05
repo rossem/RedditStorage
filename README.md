@@ -3,7 +3,7 @@
 
 =============
 
-RedditStorage is an application which allows you to store on reddit subreddits via raw bytes. The file is encoded into characters and ecrypted using AES encryption, after which it can be stored on a subreddit of choice. To restore the file, the process is simply reversed. Unfortunately, reddit comments have a character limit of 10000. If your file exceeds that amount, it will be split up among comments in the same thread which form links by replying to each other. 
+RedditStorage is an application which allows you to store on reddit subreddits via raw bytes. The file is encoded into characters and encrypted using AES encryption, after which it can be stored on a subreddit of choice. To restore the file, the process is simply reversed. Unfortunately, reddit comments have a character limit of 10000. If your file exceeds that amount, it will be split up among comments in the same thread which form links by replying to each other. 
 
 =============
 
