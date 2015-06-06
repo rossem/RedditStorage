@@ -10,6 +10,7 @@ RedditStorage is an application which allows you to store on reddit subreddits v
 Requirements:
 * reddit account (preferably with over 1 link karma on it)
 * private subreddit in which your reddit account is a moderator (make sure to set the spam filter strength of self posts and comments to "low")
+* praw
 * Python 2.7
 * Crypt.py
 * wxPython
