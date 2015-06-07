@@ -63,6 +63,7 @@ def get_decryption(filename):
             subm = submission
             break
     #make all of the comments same-level 
+    subm.replace_more_comments(limit=None, threshold=0)
     comments = praw.helpers.flatten_tree(subm.comments)
 
     for comment in comments:
