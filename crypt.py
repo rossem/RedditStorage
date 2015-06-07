@@ -13,7 +13,13 @@ class AESCipher:
     
         #need to make our string divisible by 16 for AES encryption
     def pad(self, s):
-        return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
+        n = AES.block_size - len(s) % AES.block_size
+        n = AES.block_size if n == 0 else n
+        return s + chr(n) * n
+
+    def remove_pad(self, m):
+        n = int(m[-1].encode('hex'), AES.block_size)
+        return m[: -1 * n]
         
         #encrypts plaintext and generates IV (initialization vector)
     def encrypt(self, plaintext):
@@ -27,7 +33,7 @@ class AESCipher:
         iv = ciphertext[:AES.block_size]
         cipher = AES.new(self.key, AES.MODE_CBC, iv)
         plaintext = cipher.decrypt(ciphertext[AES.block_size:])
-        return plaintext.rstrip(b"\0")
+        return self.remove_pad(plaintext)
     
         #encrypts a file and returns a comment to be posted
     def encrypt_file(self, file_path):
