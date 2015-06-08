@@ -3,4 +3,9 @@
 *.swo
 *.pyc
 
+dist/
+build/
+
+setup.py
+
 filebrowse.py
