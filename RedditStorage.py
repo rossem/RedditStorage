@@ -147,12 +147,14 @@ class PostPanel(wx.Panel):
         self.usernameField = wx.TextCtrl(self)
         self.passwordField = wx.TextCtrl(self, style = wx.TE_PASSWORD)
         self.subredditField = wx.TextCtrl(self)
+        self.keypassField = wx.TextCtrl(self)   
         self.filepathField = wx.TextCtrl(self)
-        self.keypassField = wx.TextCtrl(self)
+        
 
         fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password), 
-            (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
-          (self.filepathField, 1, wx.EXPAND)])
+            (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+            (KEYPASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+            (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(post,1,wx.EXPAND),(browseFile,1,wx.EXPAND), (postMessage)])
 
