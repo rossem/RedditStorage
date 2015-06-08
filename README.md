@@ -12,7 +12,8 @@ What you need to use it:
 * private subreddit in which your reddit account is a moderator (make sure to set the spam filter strength of self posts and comments to "low")
 * Python 2.7
 * Crypt.py
-* wxPython
+* wxPython 3.0+
+* praw
 
 =============
 
