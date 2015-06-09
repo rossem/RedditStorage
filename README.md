@@ -1,5 +1,5 @@
 #RedditStorage
-######a cloud storage that uses Reddit as a backend. 
+######A cloud storage program that uses Reddit as a backend. 
 
 =============
 
@@ -7,9 +7,10 @@ RedditStorage is an application which allows you to store on reddit subreddits v
 
 =============
 
-What you need to use it:
-* reddit account (preferabely with over 1 link karma on it)
+Requirements:
+* reddit account (preferably with over 1 link karma on it)
 * private subreddit in which your reddit account is a moderator (make sure to set the spam filter strength of self posts and comments to "low")
+* praw
 * Python 2.7
 * Crypt.py
 * wxPython 3.0+
@@ -17,7 +18,7 @@ What you need to use it:
 
 =============
 
-How to use it:
+How to Use:
 
 1. RedditStorage uses an AES encryption algorithm which requires you to choose a password(e.g. "bunny).
 2. Run python RedditStorage.py
