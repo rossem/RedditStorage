@@ -19,8 +19,8 @@ What you need to use it:
 
 How to use it:
 
-1. RedditStorage uses an AES encryption algorithm which requires you to choose a password(e.g. "bunny).
-2. Run python RedditStorage.py
+1. RedditStorage uses an AES encryption algorithm which requires you to choose a password(e.g. "bunny").
+2. Run: `python RedditStorage.py`
 3. Enter your username, password, subreddit and desired encryption key
 4. Choose the file you want to upload
 5. When getting the file, choose the file you want to get and how/where you want to save it
