@@ -5,8 +5,9 @@ import base64
 from Crypto.Cipher import AES
 from Crypto import Random
 
-class AESCipher:
-    
+
+class AESCipher(object):
+
     def __init__(self, key):
         #self.bs = 32
         self.key = hashlib.sha256(key).digest() #turns the password into a 32char long key
@@ -54,20 +55,3 @@ class AESCipher:
         with open(file_path, 'wb') as fo:
             fo.write(dec)
 
-"""
-example:
-
-cipher1 = AESCipher(KEYPASS)
-
-print cipher1.key
-
-encryption = cipher1.encrypt_file("gogo.txt")
-
-#decryption = cipher1.decrypt(encryption)
-
-dog = base64.b64encode(encryption)
-print dog
-print "hello this is bad"
-print base64.b64decode(dog)
-
-"""
