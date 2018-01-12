@@ -1,11 +1,11 @@
-#RedditStorage
-######Cloud storage that uses Reddit as a backend. 
+# RedditStorage
+#### Cloud storage that uses Reddit as a backend. 
 
-=============
+---
 
 RedditStorage is an application that allows you to store on reddit subreddits via raw bytes. The file is encoded into characters and encrypted using AES encryption, after which it can be stored on a subreddit of choice (ideally your own private subreddit). To retrieve the file, the process is simply reversed. Unfortunately, reddit comments have a character limit of 10000. If your file exceeds that amount, it will be split up among comments in the same thread which form links by replying to each other. 
 
-=============
+---
 
 Requirements:
 * reddit account (preferably with over 1 link karma on it)
@@ -15,7 +15,7 @@ Requirements:
 * pycrypto 2.6.1
 * wxPython 3.0+
 
-=============
+---
 
 How to Use:
 
@@ -29,7 +29,7 @@ How to Use:
 Screenshots
 
 
-===========
+---
 
 ![ss1](screenshot1.png "Post")
 ![ss2](screenshot2.png "Get")
@@ -40,7 +40,7 @@ Screenshots
 
 To Do
 
-==============
+---
 
 * Save username/password between sessions
 * Upload as webapp
