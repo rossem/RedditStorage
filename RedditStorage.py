@@ -75,11 +75,11 @@ class RedditList(wx.Frame):
         index = 0
         self.myRowDict = {} #dictionary used for retrival later
         for x in posts:
-            print str(x)
+            print (str(x))
             self.fileList.InsertStringItem(index, x.title)
             self.myRowDict[index] = x.title
             index+=1
-        print "done"
+        print ("done")
 
 
 
@@ -345,7 +345,7 @@ class GetPanel(wx.Panel):
             self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue()) 
     def onClickGetRedditList(self, e):
         if(self.subredditField.IsEmpty() is False):
-            print self.subredditField.GetValue()
+            print (self.subredditField.GetValue())
             frame = RedditList()
             pub.sendMessage("subredditListener", subredditName = self.subredditField.GetValue()
             , username = self.usernameField.GetValue(), password = self.passwordField.GetValue())
