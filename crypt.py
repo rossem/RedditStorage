@@ -4,23 +4,20 @@ import base64
 
 from Crypto.Cipher import AES
 from Crypto import Random
+from Crypto.Util.Padding import pad, unpad
 
 
 class AESCipher(object):
 
-    def __init__(self, key):
+    def __init__(self, key: str):
         #self.bs = 32
-        self.key = hashlib.sha256(key).digest() #turns the password into a 32char long key
-    
-        #need to make our string divisible by 16 for AES encryption
+        self.key = hashlib.sha256(key.encode('utf-8')).digest() #turns the password into a 32char long key
+
     def pad(self, s):
-        n = AES.block_size - len(s) % AES.block_size
-        n = AES.block_size if n == 0 else n
-        return s + chr(n) * n
+        return pad(s,16)
 
     def remove_pad(self, m):
-        n = int(m[-1].encode('hex'), AES.block_size)
-        return m[: -1 * n]
+        return unpad(m,16)
         
         #encrypts plaintext and generates IV (initialization vector)
     def encrypt(self, plaintext):
