@@ -6,7 +6,7 @@ from redditglobals import *
 def post_encryption(filename, encryption):
     subreddit = r.subreddit(SUBREDDIT)
     does_not_exist = True 
-    file_submissions = r.search(filename, SUBREDDIT)
+    file_submissions = subreddit.search(filename, SUBREDDIT)
 
     # getting the submission of the file if it exists already
     count = 0
@@ -18,9 +18,9 @@ def post_encryption(filename, encryption):
 
     # create submission
     if does_not_exist:
-        file_post = subreddit.submit(filename)
+        file_post = subreddit.submit(filename, selftext='')
     else:   # if file exists, then add a number to the end of the filename
-        file_post = subreddit.submit(filename + " (" + str(count) + ")")
+        file_post = subreddit.submit(filename + " (" + str(count) + ")",selftext='')
 
     # going to be splitting the encryption since the comment limit is 10000 characters
     # this is the first-level comment
