@@ -17,9 +17,9 @@ from Crypto import Random
 
 from redditglobals import *
 import wx
-from wx.lib.pubsub import pub
+from pubsub import pub
 
-import threading
+from threading import Thread, Lock, Event
 from time import sleep
 
 # cleanup dist and build directory first (for new py2exe version) 
@@ -129,8 +129,8 @@ class PostPanel(wx.Panel):
 
     # noinspection PyAttributeOutsideInit
     def InitUI(self):
-        ID_POST_BUTTON = wx.NewId()
-        ID_BROWSE_FILE_BUTTON = wx.NewId()
+        ID_POST_BUTTON = wx.NewIdRef(count=1)
+        ID_BROWSE_FILE_BUTTON = wx.NewIdRef(count=1)
 
         hit_box = wx.BoxSizer(wx.VERTICAL)
 
@@ -138,8 +138,8 @@ class PostPanel(wx.Panel):
         gs = wx.GridSizer(2, 2, 9, 10)
 
         global username
-        username = wx.StaticText(self, label="Username")
-        password = wx.StaticText(self, label="Password")
+        # username = wx.StaticText(self, label="Username")
+        # password = wx.StaticText(self, label="Password")
         subreddit = wx.StaticText(self, label="Subreddit")
         KEY_PASS = wx.StaticText(self, label="Encryption key")
         filename = wx.StaticText(self, label="Filepath")
@@ -148,14 +148,14 @@ class PostPanel(wx.Panel):
         global postMessage
         postMessage = wx.StaticText(self, label="")
 
-        self.usernameField = wx.TextCtrl(self)
-        self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
+        # self.usernameField = wx.TextCtrl(self)
+        # self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.subredditField = wx.TextCtrl(self)
         self.keypassField = wx.TextCtrl(self)
         self.filepathField = wx.TextCtrl(self)
 
-        fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password),
-                     (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+        fgs.AddMany([   # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
+                     (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
                      (KEY_PASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
                      (self.filepathField, 1, wx.EXPAND)])
 
@@ -207,19 +207,19 @@ class PostPanel(wx.Panel):
         dlg.Destroy()
 
     def onClickPostItem(self, e):
-        if (self.usernameField.IsEmpty()):
-            postMessage.SetLabel("No Username Specified")
-        elif (self.passwordField.IsEmpty()):
-            postMessage.SetLabel("No Password Entered")
-        elif (self.subredditField.IsEmpty()):
+        # if (self.usernameField.IsEmpty()):
+        #     postMessage.SetLabel("No Username Specified")
+        # elif (self.passwordField.IsEmpty()):
+        #     postMessage.SetLabel("No Password Entered")
+        if (self.subredditField.IsEmpty()):
             postMessage.SetLabel("No Subreddit Specified")
         elif (self.keypassField.IsEmpty()):
             postMessage.SetLabel("No Encryption Key Specified")
         elif (self.filepathField.IsEmpty()):
             postMessage.SetLabel("No Filepath Specified")
         else:
-            postItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
-                     self.filepathField.GetValue(), self.keypassField.GetValue())
+            postItem(   # self.usernameField.GetValue(), self.passwordField.GetValue(),
+                     self.subredditField.GetValue(), self.filepathField.GetValue(), self.keypassField.GetValue())
 
 
 # noinspection PyPep8Naming,PyRedundantParentheses
@@ -235,9 +235,9 @@ class GetPanel(wx.Panel):
 
     # noinspection PyAttributeOutsideInit
     def InitUI(self):
-        ID_GET_BUTTON = wx.NewId()
-        ID_SAVE_FILE_BUTTON = wx.NewId()
-        ID_GET_REDDIT_LIST_BUTTON = wx.NewId()
+        ID_GET_BUTTON = wx.NewIdRef(count=1)
+        ID_SAVE_FILE_BUTTON = wx.NewIdRef(count=1)
+        ID_GET_REDDIT_LIST_BUTTON = wx.NewIdRef(count=1)
 
         hbox = wx.BoxSizer(wx.VERTICAL)
 
@@ -245,8 +245,8 @@ class GetPanel(wx.Panel):
         gs = wx.GridSizer(2, 2, 9, 10)
 
         global username
-        username = wx.StaticText(self, label="Username")
-        password = wx.StaticText(self, label="Password")
+        # username = wx.StaticText(self, label="Username")
+        # password = wx.StaticText(self, label="Password")
         subreddit = wx.StaticText(self, label="Subreddit")
         file_to_get = wx.StaticText(self, label="File to get")
         KEYPASS = wx.StaticText(self, label="Encryption key")
@@ -258,15 +258,15 @@ class GetPanel(wx.Panel):
         global postMessage1
         postMessage1 = wx.StaticText(self, label="")
 
-        self.usernameField = wx.TextCtrl(self)
-        self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
+        # self.usernameField = wx.TextCtrl(self)
+        # self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self.subredditField = wx.TextCtrl(self)
         self.fileToGetField = wx.TextCtrl(self)
         self.keypassField = wx.TextCtrl(self)
         self.filepathField = wx.TextCtrl(self)
 
-        fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password),
-                     (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+        fgs.AddMany([   # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
+                     (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
                      (file_to_get, 1, wx.EXPAND), (self.fileToGetField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
                      (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.filepathField, 1, wx.EXPAND)])
 
@@ -332,11 +332,11 @@ class GetPanel(wx.Panel):
 
     # noinspection PyUnusedLocal
     def onClickGetItem(self, e):
-        if (self.usernameField.IsEmpty()):
-            postMessage1.SetLabel("No Username Specified")
-        elif (self.passwordField.IsEmpty()):
-            postMessage1.SetLabel("No Password Entered")
-        elif (self.subredditField.IsEmpty()):
+        # if (self.usernameField.IsEmpty()):
+        #     postMessage1.SetLabel("No Username Specified")
+        # elif (self.passwordField.IsEmpty()):
+        #     postMessage1.SetLabel("No Password Entered")
+        if (self.subredditField.IsEmpty()):
             postMessage1.SetLabel("No Subreddit Specified")
         elif (self.fileToGetField.IsEmpty()):
             postMessage1.SetLabel("No File Specified")
@@ -345,8 +345,9 @@ class GetPanel(wx.Panel):
         elif (self.filepathField.IsEmpty()):
             postMessage1.SetLabel("No Filepath Specified")
         else:
-            getItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
-                    self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue())
+            getItem(    # self.usernameField.GetValue(), self.passwordField.GetValue(),
+                self.subredditField.GetValue(), self.filepathField.GetValue(), self.fileToGetField.GetValue(),
+                self.keypassField.GetValue())
 
     # noinspection PyUnusedLocal
     def onClickGetRedditList(self, e):
@@ -417,8 +418,9 @@ class MainWindow(wx.Frame):
 # ------------------------------------------------------------------------------
 
 
-# noinspection PyUnusedLocal
-def postItem(username, password, subreddit, filename, KEYPASS):
+# noinspection PyUnusedLocal,PyPep8Naming
+def postItem(   # username, password,
+             subreddit, filename, KEYPASS):
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k + 1:]
@@ -431,8 +433,9 @@ def postItem(username, password, subreddit, filename, KEYPASS):
     postMessage1.SetLabel("Done")
 
 
-# noinspection PyUnusedLocal
-def getItem(username, password, subreddit, filename, file_to_get, KEYPASS):
+# noinspection PyUnusedLocal,PyPep8Naming
+def getItem(    # username, password,
+            subreddit, filename, file_to_get, KEYPASS):
     filepath = filename
     # k = filename.rfind("/")
     # filename = filename[k+1:]
