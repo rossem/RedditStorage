@@ -6,7 +6,7 @@ from redditglobals import *
 
 
 def post_encryption(filename, encryption):
-    subreddit = r.subreddit(SUBREDDIT)
+    subreddit = REDDIT.subreddit(SUBREDDIT)
     does_not_exist = True
     filename = os.path.basename(filename)
     file_submissions = subreddit.search(filename, SUBREDDIT)
@@ -46,7 +46,7 @@ def post_encryption(filename, encryption):
 def get_decryption(filename):
     decryption = ''
     
-    subreddit = r.subreddit(SUBREDDIT)
+    subreddit = REDDIT.subreddit(SUBREDDIT)
 
     file_submissions = subreddit.search(filename)
     subm = []
@@ -63,7 +63,7 @@ def get_decryption(filename):
     if submissions_found == 1:  # Found only 1 file
         # level the comments
         subm[0].replace_more(limit=None, threshold=0)
-        comments = praw.helpers.flatten_tree(subm[0].comments)
+        comments = subm[0].comments.list()
 
         for comment in comments:
             decryption = decryption + comment.body
