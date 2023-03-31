@@ -1,11 +1,9 @@
 import praw
 
-global USERAGENT,USERNAME,PASSWORD,SUBREDDIT,r
+global USERAGENT, SUBREDDIT, REDDIT
 
 USERAGENT = "reddit storage bot"
-USERNAME = ""
-PASSWORD = ""
-SUBREDDIT = "redditstoragetest"
-#MAXPOSTS = 100 
+SUBREDDIT = "subredditname"
+# MAXPOSTS = 100
 
-r = praw.Reddit(USERAGENT) 
+REDDIT = praw.Reddit(USERAGENT)
