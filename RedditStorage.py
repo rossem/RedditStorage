@@ -284,7 +284,11 @@ class GetPanel(wx.Panel):
             self, message="Save file as ...", defaultDir=os.getcwd(),
             defaultFile="", wildcard=wildcard, style=wx.FD_SAVE,
         )
-        dlg.SetFilename(self.fileToGetField.GetValue())
+
+        # For legacy support; files used to be uploaded with the whole pathname
+        # (or did before I changed the upload names)
+        temp_fn = os.path.basename(self.fileToGetField.GetValue())
+        dlg.SetFilename(temp_fn)
         # This sets the default filter that the user will initially see. Otherwise,
         # the first filter in the list will be used by default.
         dlg.SetFilterIndex(2)
