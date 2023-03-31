@@ -9,3 +9,4 @@ build/
 setup.py
 
 filebrowse.py
+/praw.ini
