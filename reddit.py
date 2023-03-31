@@ -49,23 +49,32 @@ def get_decryption(filename):
     subreddit = r.subreddit(SUBREDDIT)
 
     file_submissions = subreddit.search(filename)
-    subm = None
+    subm = []
+    submissions_found = 0
     # find the corresponding post for the file
     filename_lower = filename.lower()
     for submission in file_submissions:
+        if filename_lower in submission.title.lower():
+            subm.append(submission)
+            submissions_found += 1
+    if not submissions_found:
+        # todo: get an actual exception type
+        raise Exception("Couldn't find file")
+    if submissions_found == 1:  # Found only 1 file
+        # level the comments
+        subm[0].replace_more(limit=None, threshold=0)
+        comments = praw.helpers.flatten_tree(subm[0].comments)
 
-        if submission.title.lower() == filename_lower:
-            subm = submission
-            break
-    if subm is None:
-        # todo: return an error or something
-        return None
-    # level the comments
-    subm.replace_more_comments(limit=None, threshold=0)
-    comments = praw.helpers.flatten_tree(subm.comments)
+        for comment in comments:
+            decryption = decryption + comment.body
 
-    for comment in comments:
-        decryption = decryption + comment.body
+        return decryption
+    else:   # More than 1 similar file found; todo: Need to show a dialog window so they can select which version to dl (or all)
+        subm[0].comments.replace_more(limit=None, threshold=0)
+        comments = subm[0].comments.list()
 
-    return decryption
+        for comment in comments:
+            decryption = decryption + comment.body
+
+        return decryption
 
