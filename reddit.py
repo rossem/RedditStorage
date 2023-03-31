@@ -1,3 +1,5 @@
+import os.path
+
 import praw
 
 from redditglobals import *
@@ -5,12 +7,13 @@ from redditglobals import *
 
 def post_encryption(filename, encryption):
     subreddit = r.subreddit(SUBREDDIT)
-    does_not_exist = True 
+    does_not_exist = True
+    filename = os.path.basename(filename)
     file_submissions = subreddit.search(filename, SUBREDDIT)
 
     # getting the submission of the file if it exists already
     count = 0
-    filename_lower = filename.lower
+    filename_lower = filename.lower()
     for submission in file_submissions:
         if filename_lower in submission.title.lower():  # Looks for submissions with filename inside it
             count += 1
