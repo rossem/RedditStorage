@@ -8,7 +8,8 @@ import getpass
 
 from crypt import AESCipher
 import hashlib
-import os
+# import os
+# from os.path import basename
 import base64
 
 from Crypto.Cipher import AES
@@ -17,6 +18,9 @@ from Crypto import Random
 from redditglobals import *
 import wx
 from wx.lib.pubsub import pub
+
+import threading
+from time import sleep
 
 # cleanup dist and build directory first (for new py2exe version) 
 # if os.path.exists("dist/prog"):
@@ -31,32 +35,33 @@ from wx.lib.pubsub import pub
 wildcard = "All files (*.*)|*.*"
 
 
+# noinspection PyAttributeOutsideInit
 class RedditList(wx.Frame):
 
     def __init__(self):
         wx.Frame.__init__(self, None, wx.ID_ANY, "Files Stored", size=(300, 400))
         self.panel = wx.Panel(self)
-        pub.subscribe(self.subredditListener, "subredditListener")
-        self.InitUI()
+        pub.subscribe(self.subreddit_listener, "subredditListener")
+        self._init_UI()
 
-    def InitUI(self):
+    def _init_UI(self):
         self.fileList = wx.ListCtrl(self.panel, size=(-1, 300), style=wx.LC_REPORT
                                                                       | wx.EXPAND)
         self.fileList.InsertColumn(0, "File Name", width=500)
 
         self.gs = wx.GridSizer(1, 2, 0, 0)
 
-        submitButton = wx.Button(self.panel, label="Submit")
-        submitButton.Bind(wx.EVT_BUTTON, self.onSubmit)
-        closeButton = wx.Button(self.panel, label="Close")
-        closeButton.Bind(wx.EVT_BUTTON, self.onClose)
+        submit_button = wx.Button(self.panel, label="Submit")
+        submit_button.Bind(wx.EVT_BUTTON, self.onSubmit)
+        close_button = wx.Button(self.panel, label="Close")
+        close_button.Bind(wx.EVT_BUTTON, self.onClose)
 
-        saveButton = wx.Button(self.panel, label="Save Fields")
+        save_button = wx.Button(self.panel, label="Save Fields")
 
-        generateButton = wx.Button(self.panel, label="Generate Subreddit")
+        generate_button = wx.Button(self.panel, label="Generate Subreddit")
 
-        self.gs.Add(submitButton)
-        self.gs.Add(closeButton)
+        self.gs.Add(submit_button)
+        self.gs.Add(close_button)
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         flags = wx.ALL | wx.EXPAND
@@ -65,10 +70,10 @@ class RedditList(wx.Frame):
         sizer.Add(self.gs, flag=wx.ALIGN_BOTTOM | wx.EXPAND | wx.ALL, border=5)
         self.panel.SetSizer(sizer)
 
-    #used by onClickGetRedditList
-    def subredditListener(self, subredditName, username, password):
-        r = praw.Reddit("reddit storage bot")
-        subreddit = r.get_subreddit(subredditName)
+    # Used by onClickGetRedditList
+    def subreddit_listener(self, subreddit_name, username, password):
+        reddit = praw.Reddit("reddit storage bot")
+        subreddit = reddit.subreddit(subreddit_name)
         global posts
         posts = subreddit.get_new(limit=1000)
         index = 0
@@ -114,6 +119,7 @@ def GetNextSelected(list_control, current):
                                     wx.LIST_STATE_SELECTED)
 
 
+# noinspection PyPep8Naming,PyRedundantParentheses
 class PostPanel(wx.Panel):
 
     def __init__(self, parent):
@@ -121,11 +127,12 @@ class PostPanel(wx.Panel):
 
         self.InitUI()
 
+    # noinspection PyAttributeOutsideInit
     def InitUI(self):
         ID_POST_BUTTON = wx.NewId()
         ID_BROWSE_FILE_BUTTON = wx.NewId()
 
-        hbox = wx.BoxSizer(wx.VERTICAL)
+        hit_box = wx.BoxSizer(wx.VERTICAL)
 
         fgs = wx.FlexGridSizer(5, 2, 9, 15)
         gs = wx.GridSizer(2, 2, 9, 10)
@@ -134,7 +141,7 @@ class PostPanel(wx.Panel):
         username = wx.StaticText(self, label="Username")
         password = wx.StaticText(self, label="Password")
         subreddit = wx.StaticText(self, label="Subreddit")
-        KEYPASS = wx.StaticText(self, label="Encryption key")
+        KEY_PASS = wx.StaticText(self, label="Encryption key")
         filename = wx.StaticText(self, label="Filepath")
         post = wx.Button(self, ID_POST_BUTTON, "Post")
         browseFile = wx.Button(self, ID_BROWSE_FILE_BUTTON, "Browse File")
@@ -149,25 +156,25 @@ class PostPanel(wx.Panel):
 
         fgs.AddMany([(username), (self.usernameField, 1, wx.EXPAND), (password),
                      (self.passwordField, 1, wx.EXPAND), (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
-                     (KEYPASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+                     (KEY_PASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
                      (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(post, 1, wx.EXPAND), (browseFile, 1, wx.EXPAND), (postMessage)])
 
         fgs.AddGrowableCol(1, 1)
 
-        hbox.Add(fgs, proportion=1, flag=wx.ALL | wx.EXPAND, border=15)
-        hbox.Add(gs, proportion=1, flag=wx.ALL | wx.EXPAND, border=15)
-        # hbox.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
-        self.SetSizer(hbox)
+        hit_box.Add(fgs, proportion=1, flag=wx.ALL | wx.EXPAND, border=15)
+        hit_box.Add(gs, proportion=1, flag=wx.ALL | wx.EXPAND, border=15)
+        # hit_box.Add(postMessage, proportion=1, flag=wx.ALL|wx.EXPAND, border=15)
+        self.SetSizer(hit_box)
 
         post.Bind(wx.EVT_BUTTON, self.onClickPostItem, post)
         browseFile.Bind(wx.EVT_BUTTON, self.onClickBrowseFile, browseFile)
 
     def onClickBrowseFile(self, e):
         # Create the dialog. In this case the current directory is forced as the starting
-        # directory for the dialog, and no default file name is forced. This can easilly
-        # be changed in your program. This is an 'open' dialog, and allows multitple
+        # directory for the dialog, and no default file name is forced. This can easily
+        # be changed in your program. This is an 'open' dialog, and allows multiple
         # file selections as well.
         #
         # Finally, if the directory is changed in the process of getting files, this
@@ -215,6 +222,7 @@ class PostPanel(wx.Panel):
                      self.filepathField.GetValue(), self.keypassField.GetValue())
 
 
+# noinspection PyPep8Naming,PyRedundantParentheses
 class GetPanel(wx.Panel):
 
     def __init__(self, parent):
@@ -225,6 +233,7 @@ class GetPanel(wx.Panel):
     def fileListener(self, fileName):
         self.fileToGetField.SetValue(fileName)
 
+    # noinspection PyAttributeOutsideInit
     def InitUI(self):
         ID_GET_BUTTON = wx.NewId()
         ID_SAVE_FILE_BUTTON = wx.NewId()
@@ -274,6 +283,7 @@ class GetPanel(wx.Panel):
         saveFile.Bind(wx.EVT_BUTTON, self.onClickSaveItem)
         getRedditList.Bind(wx.EVT_BUTTON, self.onClickGetRedditList)
 
+    # noinspection PyUnusedLocal
     def onClickSaveItem(self, e):
         # self.log.WriteText("CWD: %s\n" % os.getcwd())
 
@@ -298,7 +308,7 @@ class GetPanel(wx.Panel):
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
             self.filepathField.SetValue(path)
-#todo: what does this comment block imply?
+        # todo: what does this comment block imply?
             # Normally, at this point you would save your data using the file and path
             # data that the user provided to you, but since we didn't actually start
             # with any data to work with, that would be difficult.
@@ -320,6 +330,7 @@ class GetPanel(wx.Panel):
         # BAD things can happen otherwise!
         dlg.Destroy()
 
+    # noinspection PyUnusedLocal
     def onClickGetItem(self, e):
         if (self.usernameField.IsEmpty()):
             postMessage1.SetLabel("No Username Specified")
@@ -337,6 +348,7 @@ class GetPanel(wx.Panel):
             getItem(self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
                     self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue())
 
+    # noinspection PyUnusedLocal
     def onClickGetRedditList(self, e):
         if self.subredditField.IsEmpty():
             postMessage1.SetLabel("No Subreddit Specified")
@@ -361,11 +373,11 @@ class MainNotebook(wx.Notebook):
         self.InitUI()
 
     def InitUI(self):
-        tabOne = PostPanel(self)
-        self.AddPage(tabOne, "Post")
+        tab_one = PostPanel(self)
+        self.AddPage(tab_one, "Post")
 
-        tabTwo = GetPanel(self)
-        self.AddPage(tabTwo, "Get")
+        tab_two = GetPanel(self)
+        self.AddPage(tab_two, "Get")
 
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
@@ -405,6 +417,7 @@ class MainWindow(wx.Frame):
 # ------------------------------------------------------------------------------
 
 
+# noinspection PyUnusedLocal
 def postItem(username, password, subreddit, filename, KEYPASS):
     filepath = filename
     k = filename.rfind("/")
@@ -418,6 +431,7 @@ def postItem(username, password, subreddit, filename, KEYPASS):
     postMessage1.SetLabel("Done")
 
 
+# noinspection PyUnusedLocal
 def getItem(username, password, subreddit, filename, file_to_get, KEYPASS):
     filepath = filename
     # k = filename.rfind("/")
