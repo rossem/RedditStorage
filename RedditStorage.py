@@ -140,7 +140,7 @@ class PostPanel(wx.Panel):
         global username
         # username = wx.StaticText(self, label="Username")
         # password = wx.StaticText(self, label="Password")
-        subreddit = wx.StaticText(self, label="Subreddit")
+        # subreddit = wx.StaticText(self, label="Subreddit")
         KEY_PASS = wx.StaticText(self, label="Encryption key")
         filename = wx.StaticText(self, label="Filepath")
         post = wx.Button(self, ID_POST_BUTTON, "Post")
@@ -150,12 +150,12 @@ class PostPanel(wx.Panel):
 
         # self.usernameField = wx.TextCtrl(self)
         # self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
-        self.subredditField = wx.TextCtrl(self)
+        # self.subredditField = wx.TextCtrl(self)
         self.keypassField = wx.TextCtrl(self)
         self.filepathField = wx.TextCtrl(self)
 
         fgs.AddMany([   # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
-                     (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+                        # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
                      (KEY_PASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
                      (self.filepathField, 1, wx.EXPAND)])
 
@@ -211,15 +211,15 @@ class PostPanel(wx.Panel):
         #     postMessage.SetLabel("No Username Specified")
         # elif (self.passwordField.IsEmpty()):
         #     postMessage.SetLabel("No Password Entered")
-        if (self.subredditField.IsEmpty()):
-            postMessage.SetLabel("No Subreddit Specified")
-        elif (self.keypassField.IsEmpty()):
+        # elif (self.subredditField.IsEmpty()):
+        #     postMessage.SetLabel("No Subreddit Specified")
+        if (self.keypassField.IsEmpty()):
             postMessage.SetLabel("No Encryption Key Specified")
         elif (self.filepathField.IsEmpty()):
             postMessage.SetLabel("No Filepath Specified")
         else:
-            postItem(   # self.usernameField.GetValue(), self.passwordField.GetValue(),
-                     self.subredditField.GetValue(), self.filepathField.GetValue(), self.keypassField.GetValue())
+            postItem(   # self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+                        self.filepathField.GetValue(), self.keypassField.GetValue())
 
 
 # noinspection PyPep8Naming,PyRedundantParentheses
@@ -247,7 +247,7 @@ class GetPanel(wx.Panel):
         global username
         # username = wx.StaticText(self, label="Username")
         # password = wx.StaticText(self, label="Password")
-        subreddit = wx.StaticText(self, label="Subreddit")
+        # subreddit = wx.StaticText(self, label="Subreddit")
         file_to_get = wx.StaticText(self, label="File to get")
         KEYPASS = wx.StaticText(self, label="Encryption key")
         filename = wx.StaticText(self, label="Filepath")
@@ -260,13 +260,13 @@ class GetPanel(wx.Panel):
 
         # self.usernameField = wx.TextCtrl(self)
         # self.passwordField = wx.TextCtrl(self, style=wx.TE_PASSWORD)
-        self.subredditField = wx.TextCtrl(self)
+        # self.subredditField = wx.TextCtrl(self)
         self.fileToGetField = wx.TextCtrl(self)
         self.keypassField = wx.TextCtrl(self)
         self.filepathField = wx.TextCtrl(self)
 
-        fgs.AddMany([   # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
-                     (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+        fgs.AddMany([
+                        # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
                      (file_to_get, 1, wx.EXPAND), (self.fileToGetField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
                      (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.filepathField, 1, wx.EXPAND)])
 
@@ -336,18 +336,17 @@ class GetPanel(wx.Panel):
         #     postMessage1.SetLabel("No Username Specified")
         # elif (self.passwordField.IsEmpty()):
         #     postMessage1.SetLabel("No Password Entered")
-        if (self.subredditField.IsEmpty()):
-            postMessage1.SetLabel("No Subreddit Specified")
-        elif (self.fileToGetField.IsEmpty()):
+        # elif (self.subredditField.IsEmpty()):
+        #     postMessage1.SetLabel("No Subreddit Specified")
+        if (self.fileToGetField.IsEmpty()):
             postMessage1.SetLabel("No File Specified")
         elif (self.keypassField.IsEmpty()):
             postMessage1.SetLabel("No Encryption Key Specified")
         elif (self.filepathField.IsEmpty()):
             postMessage1.SetLabel("No Filepath Specified")
         else:
-            getItem(    # self.usernameField.GetValue(), self.passwordField.GetValue(),
-                self.subredditField.GetValue(), self.filepathField.GetValue(), self.fileToGetField.GetValue(),
-                self.keypassField.GetValue())
+            getItem(    # self.subredditField.GetValue(),
+                    self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue())
 
     # noinspection PyUnusedLocal
     def onClickGetRedditList(self, e):
@@ -419,8 +418,7 @@ class MainWindow(wx.Frame):
 
 
 # noinspection PyUnusedLocal,PyPep8Naming
-def postItem(   # username, password,
-             subreddit, filename, KEYPASS):
+def postItem(filename: str, KEYPASS: str):
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k + 1:]
@@ -434,8 +432,7 @@ def postItem(   # username, password,
 
 
 # noinspection PyUnusedLocal,PyPep8Naming
-def getItem(    # username, password,
-            subreddit, filename, file_to_get, KEYPASS):
+def getItem(filename, file_to_get, KEYPASS):
     filepath = filename
     # k = filename.rfind("/")
     # filename = filename[k+1:]
@@ -475,16 +472,16 @@ def getItem(    # username, password,
 
 # def _login(username, password):
 #     r.login(user=username,passwd=password)
-
-def checkForMod(user, subreddit):
-    subr = r.get_subreddit(subreddit)
-    mods = subr.get_moderators()
-
-    for mod in mods:
-        if mod == user.lower():
-            return True
-    return False
-
+#
+# def checkForMod(user, subreddit):
+#     subr = reddit.get_subreddit(subreddit)
+#     mods = subr.get_moderators()
+#
+#     for mod in mods:
+#         if mod == user.lower():
+#             return True
+#     return False
+#
 
 if __name__ == '__main__':
     app = wx.App()
