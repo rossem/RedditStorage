@@ -282,7 +282,7 @@ class GetPanel(wx.Panel):
         # be changed in your program. This is an 'save' dialog.
         dlg = wx.FileDialog(
             self, message="Save file as ...", defaultDir=os.getcwd(),
-            defaultFile="", wildcard=wildcard, style=wx.SAVE,
+            defaultFile="", wildcard=wildcard, style=wx.FD_SAVE,
         )
         dlg.SetFilename(self.fileToGetField.GetValue())
         # This sets the default filter that the user will initially see. Otherwise,
