@@ -50,7 +50,7 @@ pip install praw pycryptodome wxpython pypubsub
 
 ### Start-up:
 ```shell
-python RedditStorage.py
+python main.py
 ```
 
 ### Posting files
