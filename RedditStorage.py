@@ -154,10 +154,10 @@ class PostPanel(wx.Panel):
         self.keypassField = wx.TextCtrl(self)
         self.filepathField = wx.TextCtrl(self)
 
-        fgs.AddMany([   # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
-                        # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
-                     (KEY_PASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
-                     (self.filepathField, 1, wx.EXPAND)])
+        fgs.AddMany([  # (username), (self.usernameField, 1, wx.EXPAND), (password),(self.passwordField, 1, wx.EXPAND),
+            # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+            (KEY_PASS, 1, wx.EXPAND), (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND),
+            (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(post, 1, wx.EXPAND), (browseFile, 1, wx.EXPAND), (postMessage)])
 
@@ -218,8 +218,8 @@ class PostPanel(wx.Panel):
         elif (self.filepathField.IsEmpty()):
             postMessage.SetLabel("No Filepath Specified")
         else:
-            postItem(   # self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
-                        self.filepathField.GetValue(), self.keypassField.GetValue())
+            postItem(  # self.usernameField.GetValue(), self.passwordField.GetValue(), self.subredditField.GetValue(),
+                self.filepathField.GetValue(), self.keypassField.GetValue())
 
 
 # noinspection PyPep8Naming,PyRedundantParentheses
@@ -266,9 +266,9 @@ class GetPanel(wx.Panel):
         self.filepathField = wx.TextCtrl(self)
 
         fgs.AddMany([
-                        # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
-                     (file_to_get, 1, wx.EXPAND), (self.fileToGetField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
-                     (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.filepathField, 1, wx.EXPAND)])
+            # (subreddit, 1, wx.EXPAND), (self.subredditField, 1, wx.EXPAND),
+            (file_to_get, 1, wx.EXPAND), (self.fileToGetField, 1, wx.EXPAND), (KEYPASS, 1, wx.EXPAND),
+            (self.keypassField, 1, wx.EXPAND), (filename, 1, wx.EXPAND), (self.filepathField, 1, wx.EXPAND)])
 
         gs.AddMany([(get, 1, wx.EXPAND), (saveFile, 1, wx.EXPAND), (getRedditList, 1, wx.EXPAND), (postMessage1)])
 
@@ -309,18 +309,18 @@ class GetPanel(wx.Panel):
             path = dlg.GetPath()
             self.filepathField.SetValue(path)
         # todo: what does this comment block imply?
-            # Normally, at this point you would save your data using the file and path
-            # data that the user provided to you, but since we didn't actually start
-            # with any data to work with, that would be difficult.
-            # 
-            # The code to do so would be similar to this, assuming 'data' contains
-            # the data you want to save:
-            #
-            # fp = file(path, 'w') # Create file anew
-            # fp.write(data)
-            # fp.close()
-            #
-            # You might want to add some error checking
+        # Normally, at this point you would save your data using the file and path
+        # data that the user provided to you, but since we didn't actually start
+        # with any data to work with, that would be difficult.
+        #
+        # The code to do so would be similar to this, assuming 'data' contains
+        # the data you want to save:
+        #
+        # fp = file(path, 'w') # Create file anew
+        # fp.write(data)
+        # fp.close()
+        #
+        # You might want to add some error checking
 
         # Note that the current working dir didn't change. This is good since
         # that's the way we set it up.
@@ -345,8 +345,8 @@ class GetPanel(wx.Panel):
         elif (self.filepathField.IsEmpty()):
             postMessage1.SetLabel("No Filepath Specified")
         else:
-            getItem(    # self.subredditField.GetValue(),
-                    self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue())
+            getItem(  # self.subredditField.GetValue(),
+                self.filepathField.GetValue(), self.fileToGetField.GetValue(), self.keypassField.GetValue())
 
     # noinspection PyUnusedLocal
     def onClickGetRedditList(self, e):
@@ -455,6 +455,7 @@ def getItem(filename, file_to_get, KEYPASS):
     postMessage1.SetLabel("Done")
     postMessage.SetLabel("Done")
 
+
 #
 # def loginMod(username, password, subreddit):
 #     trying = True
@@ -483,7 +484,11 @@ def getItem(filename, file_to_get, KEYPASS):
 #     return False
 #
 
-if __name__ == '__main__':
+def StartApp():
     app = wx.App()
     MainWindow(None, title='subreddit')
     app.MainLoop()
+
+
+if __name__ == '__main__':
+    StartApp()
