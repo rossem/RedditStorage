@@ -10,3 +10,5 @@ setup.py
 
 filebrowse.py
 /praw.ini
+**/venv
+**/.idea
