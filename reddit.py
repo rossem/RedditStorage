@@ -5,7 +5,7 @@ import praw
 from redditglobals import *
 
 
-def post_encryption(filename, encryption):
+def post_encryption(filename, encrypt_items):
     subreddit = REDDIT.subreddit(SUBREDDIT)
     does_not_exist = True
     filename = os.path.basename(filename)
@@ -19,28 +19,25 @@ def post_encryption(filename, encryption):
             count += 1
             does_not_exist = False
 
-    # create submission
+    # create submission. Post text will be the MAC
     if does_not_exist:
-        file_post = subreddit.submit(filename, selftext='')
+        file_post = subreddit.submit(filename, selftext=encrypt_items[1])
     else:   # if file exists, then add a number to the end of the filename
-        file_post = subreddit.submit(filename + " (" + str(count) + ")",selftext='')
+        file_post = subreddit.submit(filename + " (" + str(count) + ")", selftext=encrypt_items[1])
 
     # going to be splitting the encryption since the comment limit is 10000 characters
     # this is the first-level comment
 
-    current_comment = file_post.reply(encryption[:10000])
-    encryption = encryption[10000:]
+    current_comment = file_post.reply(encrypt_items[0][:10000])
+    cur_index = 10000
+    ciphertext_len = len(encrypt_items[0])
 
-    #if it does not fit, then we will add a child comment to it and repeat
-    if len(encryption) != 0:
-
-        while len(encryption) > 10000: 
-            #to-do
-            current_comment = current_comment.reply(encryption[:10000])
-            encryption = encryption[10000:]
-
-    if len(encryption) > 0:
-        current_comment.reply(encryption)
+    # Tries to reply with max chars for comments (10,000) until there isn't enough in the buffer
+    while ciphertext_len - cur_index >= 10000:  # Keep replying with max chars until we can't
+        current_comment = current_comment.reply(encrypt_items[0][cur_index:cur_index+10000])
+        cur_index += 10000
+    if ciphertext_len > cur_index:
+        current_comment.reply(encrypt_items[0][cur_index:])
 
 
 def get_decryption(filename):
