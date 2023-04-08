@@ -425,15 +425,15 @@ def postItem(filename: str, KEYPASS: str):
 
     # loginMod(username, password, subreddit)
     cipher = AESCipher(KEYPASS)
-    comment = cipher.encrypt_file(filepath)
-    post_encryption(filename, comment)
+    encrypt_items = cipher.encrypt_file(filepath)
+    post_encryption(filename, encrypt_items)
     postMessage.SetLabel("Done")
     postMessage1.SetLabel("Done")
 
 
 # noinspection PyUnusedLocal,PyPep8Naming
-def getItem(filename, file_to_get, KEYPASS):
-    filepath = filename
+def getItem(save_location, file_to_get, ENCRYPT_KEY):
+    filepath = save_location
     # k = filename.rfind("/")
     # filename = filename[k+1:]
     # filepath = filepath[:k+1]
@@ -441,7 +441,7 @@ def getItem(filename, file_to_get, KEYPASS):
     # filepath = filepath + file_to_get
 
     # loginMod(username, password, subreddit)
-    cipher = AESCipher(KEYPASS)
+    cipher = AESCipher(ENCRYPT_KEY)
     comment = get_decryption(file_to_get)
 
     """
