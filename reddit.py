@@ -40,8 +40,8 @@ def post_encryption(filename, encrypt_items):
         current_comment.reply(encrypt_items[0][cur_index:])
 
 
-def get_decryption(filename):
-    decryption = ''
+def get_ciphertext(filename):
+    ciphertext = ''
     
     subreddit = REDDIT.subreddit(SUBREDDIT)
 
@@ -61,17 +61,18 @@ def get_decryption(filename):
         # level the comments
         subm[0].replace_more(limit=None, threshold=0)
         comments = subm[0].comments.list()
-
+        mac: str = subm[0].selftext
         for comment in comments:
-            decryption = decryption + comment.body
+            ciphertext: str = ciphertext + comment.body
 
-        return decryption
+        return [ciphertext, mac]
     else:   # More than 1 similar file found; todo: Need to show a dialog window so they can select which version to dl (or all)
         subm[0].comments.replace_more(limit=None, threshold=0)
+        mac: str = subm[0].selftext
         comments = subm[0].comments.list()
 
         for comment in comments:
-            decryption = decryption + comment.body
+            ciphertext: str = ciphertext + comment.body
 
-        return decryption
+        return [ciphertext, mac]
 

@@ -442,7 +442,7 @@ def getItem(save_location, file_to_get, ENCRYPT_KEY):
 
     # loginMod(username, password, subreddit)
     cipher = AESCipher(ENCRYPT_KEY)
-    comment = get_decryption(file_to_get)
+    comment = get_ciphertext(file_to_get)
 
     """
     if filename[-1] == ")":
@@ -451,7 +451,7 @@ def getItem(save_location, file_to_get, ENCRYPT_KEY):
         filepath = filepath[:-n]
     """
 
-    cipher.decrypt_file(comment, filepath)
+    cipher.decrypt_to_file(comment, filepath)
     postMessage1.SetLabel("Done")
     postMessage.SetLabel("Done")
 
