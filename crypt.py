@@ -47,7 +47,7 @@ class AESCipher(object):
         return cipher.decrypt_and_verify(ciphertext, mac_tag)
 
     # encrypts a file and returns a comment to be posted
-    def encrypt_file(self, file_path: str) -> List[bytes]:
+    def encrypt_file(self, file_path: str) -> Tuple[bytes, bytes]:
         """
         Encrypts a file and returns the ciphertext and associated MAC
         :param file_path: The path to the file to encrypt
@@ -57,11 +57,11 @@ class AESCipher(object):
             plaintext = fo.read()
         enc = self.encrypt(plaintext)
         # comment = enc.decode('ISO-8859-1').encode('ascii')
-        return [b64encode(enc[0]), b64encode(enc[1])]
+        return b64encode(enc[0]), b64encode(enc[1])
 
         # takes in a comment to be posted and decrypts it into a file
 
-    def decrypt_to_file(self, encrypt_items: List[bytes], file_path: str):
+    def decrypt_to_file(self, encrypt_items: Tuple[bytes, bytes], file_path: str):
         """
         Decrypts a file encrypted in AES-GCM and outputs the result to the given filepath
         :parameter encrypt_items: A Tuple containing [ciphertext, MAC]
