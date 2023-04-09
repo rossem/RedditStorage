@@ -19,9 +19,8 @@ RedditStorage is an application that allows you to store on reddit subreddits vi
 ### Required Files
 You'll need a few things first:
 1. A config file named `praw.ini` to be used with `configparser`. See an example here of what the format should look like: [example_praw.ini](/example_praw.ini)
-2. Fill out `redditglobals.py` with the subreddit name and useragent you're using in the `praw.ini` file.
+2. Fill out `redditglobals.py` with the label you're using in the `praw.ini` file.
     1. Replace `reddit storage bot` with whatever label you set in between the square brackets in your `praw.ini`
-    2. Replace `subredditname` with the name of the subreddit you're posting in (don't try and post to r/SUBREDDITNAME, because that works)
 
 ### Python installation:
 
