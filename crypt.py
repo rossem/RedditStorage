@@ -1,15 +1,13 @@
-from argon2 import PasswordHasher
-
+import argon2.low_level
+from argon2 import PasswordHasher, Parameters, Type
+from argon2.low_level import hash_secret
 from base64 import b64decode, b64encode
 
 from Crypto.Cipher import AES
-from Crypto import Random as crand
-from Crypto.Util.Padding import pad, unpad
 from typing import Tuple, List, Union
 
 
 class AESCipher(object):
-
     # Mainly for internal use. So we don't have to remake this object every encryption/decryption
     hasher = PasswordHasher()
 
@@ -19,35 +17,15 @@ class AESCipher(object):
         :param key: The password to use as a key
         """
         # argon2 outputs a single string with all parameters delimited by a '$'
-        self.argon2 = self.hasher.hash(key).split('$')
-
+        self.argon2 = self.hasher.hash(key)
+        self.argon2params, self.salt, self.hash = self.extract_parameters(self.argon2)
         # argon2-cffi encodes the values in base64, so we decode it here to get our byte values
-        self.salt = b64decode(self.argon2[5] + '==')  # Should be 16 bytes long by default
-        self.key = b64decode(self.argon2[5] + '=')  # Should be 32 bytes long
-
-    # encrypts plaintext and generates IV (initialization vector)
-    def encrypt(self, plaintext: Union[str, bytes]) -> Tuple[bytes, bytes]:
-        """
-        Returns the AES-GCM-encrypted ciphertext and MAC
-        :param plaintext: The plaintext to encrypt
-        :return: A Tuple containing [ciphertext, MAC]
-        """
-        cipher = AES.new(self.key, AES.MODE_GCM)
-        return cipher.encrypt_and_digest(plaintext)
-
-    # decrypts ciphertexts
-    def decrypt(self, ciphertext: bytes, mac_tag: bytes) -> bytes:
-        """
-        Returns the decrypted ciphertext
-        :param ciphertext: The ciphertext to decrypt
-        :param mac_tag: The MAC for the ciphertext
-        :return: The decrypted information
-        """
-        cipher = AES.new(self.key, AES.MODE_GCM)
-        return cipher.decrypt_and_verify(ciphertext, mac_tag)
+        # And we need to add padding '=' because reasons b64 needs that number of chars
+        self.key: bytes = b64decode(self.hash + '=')  # Should be 32 bytes long
+        self.secret = key
 
     # encrypts a file and returns a comment to be posted
-    def encrypt_file(self, file_path: str) -> Tuple[bytes, bytes]:
+    def encrypt_file(self, file_path: str) -> Tuple[bytes, bytes, bytes]:
         """
         Encrypts a file and returns the ciphertext and associated MAC
         :param file_path: The path to the file to encrypt
@@ -55,21 +33,117 @@ class AESCipher(object):
         """
         with open(file_path, 'rb') as fo:
             plaintext = fo.read()
-        enc = self.encrypt(plaintext)
+        enc = self._encrypt(plaintext)
         # comment = enc.decode('ISO-8859-1').encode('ascii')
-        return b64encode(enc[0]), b64encode(enc[1])
+        print('\nEncryption info:\nMAC: ', enc[1],'\nSalt: ',self.salt,'\nKey: ',self.hash,'\nSecret: ',self.secret)
+        return enc[0], enc[1], enc[2]
 
         # takes in a comment to be posted and decrypts it into a file
 
-    def decrypt_to_file(self, encrypt_items: Tuple[bytes, bytes], file_path: str):
+    _STR_TYPE_TO_TYPE = {"Type.ID": Type.ID, "Type.I": Type.I, "Type.D": Type.D}
+
+    def decrypt_to_file(self, encrypt_items: Tuple[bytes, List[str]], file_path: str):
         """
         Decrypts a file encrypted in AES-GCM and outputs the result to the given filepath
-        :parameter encrypt_items: A Tuple containing [ciphertext, MAC]
+        :parameter encrypt_items: A Tuple containing [ciphertext, argon2 parameters]
         :parameter file_path: The file path to output the decrypted file to
         """
-        ciphertext = b64decode(encrypt_items[0])
-        mac = b64decode(encrypt_items[1])
+        ciphertext = encrypt_items[0]
+        mac = encrypt_items[1][0]
+        salt = encrypt_items[1][1]
+        nonce = encrypt_items[1][9]
         # ciphertext = comment.decode('ascii').encode('ISO-8859-1')
-        dec = self.decrypt(ciphertext, mac)
+        # Format is MAC$salt$time cost$memory cost$parallelism$hash length$salt length$argon2 type$argon2 version
+        dec = self._decrypt(ciphertext, b64decode(mac), b64decode(salt), b64decode(nonce),
+                            Parameters(time_cost=int(encrypt_items[1][2]),
+                                       memory_cost=int(encrypt_items[1][3]),
+                                       parallelism=int(encrypt_items[1][4]),
+                                       hash_len=int(encrypt_items[1][5]),
+                                       salt_len=int(encrypt_items[1][6]),
+                                       type=self._STR_TYPE_TO_TYPE[encrypt_items[1][7]],
+                                       version=int(encrypt_items[1][8])
+                                       )
+                            )
         with open(file_path, 'wb') as fo:
             fo.write(dec)
+
+    # encrypts plaintext and generates IV (initialization vector)
+    def _encrypt(self, plaintext: Union[str, bytes]) -> Tuple[bytes, bytes, bytes]:
+        """
+        Returns the AES-GCM-encrypted ciphertext and MAC
+        :param plaintext: The plaintext to encrypt
+        :return: A Tuple containing [ciphertext, MAC]
+        """
+        cipher = AES.new(self.key, AES.MODE_GCM)
+        ciphertext_mac = cipher.encrypt_and_digest(plaintext)
+        return ciphertext_mac[0], ciphertext_mac[1], cipher.nonce
+
+    # decrypts ciphertexts
+    def _decrypt(self, ciphertext: bytes, mac_tag: bytes, salt: bytes, nonce:bytes, argon2_params: Parameters) -> bytes:
+        """
+        Returns the decrypted ciphertext
+        :param ciphertext: The ciphertext to decrypt
+        :param mac_tag: The MAC for the ciphertext
+        :param salt: The salt used for the key
+        :param nonce: The nonce used by the AES algorithm
+        :return: The decrypted information
+        """
+        cipher = AES.new(
+            b64decode(argon2.low_level.hash_secret(self.secret.encode('utf-8'), salt,
+                                                   argon2_params.time_cost, argon2_params.memory_cost,
+                                                   argon2_params.parallelism, argon2_params.hash_len,
+                                                   argon2_params.type, argon2_params.version
+                                                   ).decode('utf-8').split('$')[5] + '='
+                      ),
+            AES.MODE_GCM, nonce=nonce)
+        return cipher.decrypt_and_verify(ciphertext, mac_tag)
+
+    _NAME_TO_TYPE = {"argon2id": Type.ID, "argon2i": Type.I, "argon2d": Type.D}
+
+    @classmethod
+    def extract_parameters(cls, argon2item: str) -> List[Union[Parameters, str]]:
+        """
+        Extracts argon2 parameters and returns the salt and hash
+        :param argon2item: The argon2 item returned from using argon2 hashing (i.e., argon2.PassswordHasher)
+        :return: A list containing [argon2 parameters, salt, hash]
+        """
+        parts = argon2item.split("$")
+
+        # Backwards compatibility for Argon v1.2 hashes
+        if len(parts) == 5:
+            parts.insert(2, "v=18")
+
+        argon2_type = cls._NAME_TO_TYPE[parts[1]]
+
+        kvs = {
+            k: int(v)
+            for k, v in (
+                s.split("=") for s in [parts[2]] + parts[3].split(",")
+            )
+        }
+
+        return [Parameters(
+            type=argon2_type,
+            salt_len=cls._decoded_str_len(len(parts[4])),
+            hash_len=cls._decoded_str_len(len(parts[5])),
+            version=kvs["v"],
+            time_cost=kvs["t"],
+            memory_cost=kvs["m"],
+            parallelism=kvs["p"],
+        ), parts[4], parts[5]]
+
+    @classmethod
+    def _decoded_str_len(cls, l: int) -> int:
+        """
+        Compute how long an encoded string of length *l* becomes.
+        """
+        rem = l % 4
+
+        if rem == 3:
+            last_group_len = 2
+        elif rem == 2:
+            last_group_len = 1
+        else:
+            last_group_len = 0
+
+        return l // 4 * 3 + last_group_len

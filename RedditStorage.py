@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # simple.py
+import gc
 
 import praw
 from reddit import *
@@ -422,12 +423,18 @@ def postItem(filename: str, KEYPASS: str):
     filepath = filename
     k = filename.rfind("/")
     filename = filename[k + 1:]
-
+    del k
+    gc.collect()
     # loginMod(username, password, subreddit)
     cipher = AESCipher(KEYPASS)
     encrypt_items = cipher.encrypt_file(filepath)
-    post_encryption(filename, encrypt_items)
-    postMessage.SetLabel("Done")
+    b64ciphertext = b64encode(encrypt_items[0])
+    b64mac = b64encode(encrypt_items[1])
+    b64nonce = b64encode(encrypt_items[2])
+    del encrypt_items
+    gc.collect()
+    post_encryption(filename, b64ciphertext, b64mac, cipher.salt, b64nonce, cipher.argon2params)
+    postMessage.SetLabel("Done")    # Todo: these labels need to disappear after some time
     postMessage1.SetLabel("Done")
 
 
@@ -442,47 +449,13 @@ def getItem(save_location, file_to_get, ENCRYPT_KEY):
 
     # loginMod(username, password, subreddit)
     cipher = AESCipher(ENCRYPT_KEY)
-    comment = get_ciphertext(file_to_get)
-
-    """
-    if filename[-1] == ")":
-        j = filename.rfind("(") - 1
-        n = len(filename) - j
-        filepath = filepath[:-n]
-    """
-
-    cipher.decrypt_to_file(comment, filepath)
+    encrypt_items = get_ciphertext(file_to_get)
+    cipher.decrypt_to_file(encrypt_items, filepath)
+    del encrypt_items
+    gc.collect()
     postMessage1.SetLabel("Done")
     postMessage.SetLabel("Done")
 
-
-#
-# def loginMod(username, password, subreddit):
-#     trying = True
-#     while trying:
-#         try:
-#             _login(username, password)
-#             trying = False
-#         except praw.errors.InvalidUserPass:
-#             postMessage.SetLabel("Wrong Password")
-#             postMessage1.SetLabel("Wrong Password")
-#     while checkForMod(username, subreddit):
-#         postMessage.SetLabel("Not a Moderator of the Subreddit")
-#         postMessage1.SetLabel("Not a Moderator of the Subreddit")
-
-
-# def _login(username, password):
-#     r.login(user=username,passwd=password)
-#
-# def checkForMod(user, subreddit):
-#     subr = reddit.get_subreddit(subreddit)
-#     mods = subr.get_moderators()
-#
-#     for mod in mods:
-#         if mod == user.lower():
-#             return True
-#     return False
-#
 
 def StartApp():
     app = wx.App()
