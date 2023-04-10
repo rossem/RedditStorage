@@ -1,10 +1,9 @@
-import argon2.low_level
-from argon2 import PasswordHasher, Parameters, Type
-from argon2.low_level import hash_secret
-from base64 import b64decode, b64encode
-
-from Crypto.Cipher import AES
+from base64 import b64decode
 from typing import Tuple, List, Union
+
+import argon2.low_level
+from Crypto.Cipher import AES
+from argon2 import PasswordHasher, Parameters, Type
 
 
 class AESCipher(object):
@@ -35,7 +34,8 @@ class AESCipher(object):
             plaintext = fo.read()
         enc = self._encrypt(plaintext)
         # comment = enc.decode('ISO-8859-1').encode('ascii')
-        print('\nEncryption info:\nMAC: ', enc[1],'\nSalt: ',self.salt,'\nKey: ',self.hash,'\nSecret: ',self.secret)
+        print('\nEncryption info:\nMAC: ', enc[1], '\nSalt: ', self.salt, '\nKey: ', self.hash, '\nSecret: ',
+              self.secret)
         return enc[0], enc[1], enc[2]
 
         # takes in a comment to be posted and decrypts it into a file
@@ -79,7 +79,8 @@ class AESCipher(object):
         return ciphertext_mac[0], ciphertext_mac[1], cipher.nonce
 
     # decrypts ciphertexts
-    def _decrypt(self, ciphertext: bytes, mac_tag: bytes, salt: bytes, nonce:bytes, argon2_params: Parameters) -> bytes:
+    def _decrypt(self, ciphertext: bytes, mac_tag: bytes, salt: bytes, nonce: bytes,
+                 argon2_params: Parameters) -> bytes:
         """
         Returns the decrypted ciphertext
         :param ciphertext: The ciphertext to decrypt
@@ -133,11 +134,13 @@ class AESCipher(object):
         ), parts[4], parts[5]]
 
     @classmethod
-    def _decoded_str_len(cls, l: int) -> int:
+    def _decoded_str_len(cls, str_len: int) -> int:
         """
         Compute how long an encoded string of length *l* becomes.
+        :param str_len Length of encoded string
+        :return Length of decoded string
         """
-        rem = l % 4
+        rem = str_len % 4
 
         if rem == 3:
             last_group_len = 2
@@ -146,4 +149,4 @@ class AESCipher(object):
         else:
             last_group_len = 0
 
-        return l // 4 * 3 + last_group_len
+        return str_len // 4 * 3 + last_group_len
