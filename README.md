@@ -1,5 +1,5 @@
-#RedditStorage
-######Cloud storage that uses Reddit as a backend. 
+# RedditStorage
+###### Cloud storage that uses Reddit as a backend. 
 
 =============
 
@@ -7,26 +7,69 @@ RedditStorage is an application that allows you to store on reddit subreddits vi
 
 =============
 
-Requirements:
-* reddit account (preferably with over 1 link karma on it)
-* private subreddit with your reddit account as a moderator (make sure to set the spam filter strength of self posts and comments to "low")
-* praw 2.1.21
-* Python 2.7
-* pycrypto 2.6.1
-* wxPython 3.0+
+## Requirements:
+* A Reddit account (preferably with over 1 link karma on it)
+* A private subreddit with your reddit account as a moderator (make sure to set the spam filter strength of self posts and comments to "low")
+* praw 7.7.0
+* Python 3.5+ (and Pip3)
+* pycryptodome 3.17
+* wxPython 3.0
+* Pypubsub 4.3.0
+
+### Required Files
+You'll need a few things first:
+1. A config file named `praw.ini` to be used with `configparser`. See an example here of what the format should look like: [example_praw.ini](/example_praw.ini)
+2. Fill out `redditglobals.py` with the label you're using in the `praw.ini` file.
+    1. Replace `reddit storage bot` with whatever label you set in between the square brackets in your `praw.ini`
+
+### Python installation:
+
+#### All Operating Systems:
+
+Download the latest version of Python from [here](https://www.python.org/downloads/). Pip is included by default.
+
+#### Linux only
+
+If you can't use a browser for whatever reason, run this instead:
+
+```shell
+sudo apt-get install python3 python3-pip
+```
+
+### Package installation:
+
+```shell
+pip install praw pycryptodome wxpython pypubsub
+```
+
 
 =============
 
-How to Use:
+## Usage:
 
-1. RedditStorage uses an AES encryption algorithm which requires you to choose a password(e.g. "bunny").
-2. Run: `python RedditStorage.py`
-3. Enter your username, password, subreddit and desired encryption key
-4. Choose the file you want to upload
-5. When getting the file, choose the file you want to get and how/where you want to save it
+### Start-up:
+```shell
+python main.py
+```
 
+### Posting files
 
-Screenshots
+1. Enter the encryption key to be used to encrypt the files. Treat this like a normal password. *If you lose this, we can't help you decrypt it*
+2. Choose the file you want to upload.
+3. Press `Post`.
+
+*The window may say "Not Responding" or freeze if you choose large files. This is normal and you need to wait it out.*
+
+### Downloading files
+
+1. Enter the name of the file to get. *It takes some time for Reddit's search index to update (about every 20 minutes). You should check that you can find it using Reddit's search feature first before running this.*
+2. Enter the encryption key you used to encrypt the file when posting it. 
+3. Click `Save File As` and select a location and name to save the file as. Alternatively, enter the save location manually.
+4. Press `Get`.
+
+*As before, the window may say "Not Responding" or you may get the beachball of death on MacOS. Again, just wait it out.*
+
+### Screenshots
 
 
 ===========
@@ -37,11 +80,9 @@ Screenshots
 ![ss4](screenshot4.png "README.md uploaded")
 ![ss5](screenshot5.png "Big file made up of linked comments")
 
-
-To Do
+## To Do
 
 ==============
 
-* Save username/password between sessions
 * Upload as webapp
 * Auto generate subreddits
