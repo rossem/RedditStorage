@@ -62,7 +62,7 @@ python main.py
 
 ### Downloading files
 
-1. Enter the name of the file to get. *Some filenames will not show up in Reddit's search tool (e.g., ChromeSetup.exe). You should check that you can find it using Reddit's search feature first before running this.*
+1. Enter the name of the file to get. *It takes some time for Reddit's search index to update (about every 20 minutes). You should check that you can find it using Reddit's search feature first before running this.*
 2. Enter the encryption key you used to encrypt the file when posting it. 
 3. Click `Save File As` and select a location and name to save the file as. Alternatively, enter the save location manually.
 4. Press `Get`.
