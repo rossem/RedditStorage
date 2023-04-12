@@ -7,8 +7,9 @@ from argon2 import PasswordHasher, Parameters, Type
 
 
 class AESCipher(object):
-    # Mainly for internal use. So we don't have to remake this object every encryption/decryption
+
     hasher = PasswordHasher()
+    """Mainly for internal use. So we don't have to remake this object every encryption/decryption"""
 
     def __init__(self, key: str):
         """
@@ -78,17 +79,6 @@ class AESCipher(object):
         with open(file_path, 'wb') as fo:
             fo.write(dec)
 
-    # # encrypts plaintext and generates IV (initialization vector)
-    # def _encrypt(self, plaintext: Union[str, bytes]) -> Tuple[bytes, bytes, bytes]:
-    #     """
-    #     Returns the AES-GCM-encrypted ciphertext and MAC
-    #     :param plaintext: The plaintext to encrypt
-    #     :return: A Tuple containing [ciphertext, MAC]
-    #     """
-    #     cipher = AES.new(self.key, AES.MODE_GCM)
-    #     ciphertext_mac = cipher.encrypt_and_digest(plaintext)
-    #     return ciphertext_mac[0], ciphertext_mac[1], cipher.nonce
-
     # decrypts ciphertexts
     def _decrypt(self, ciphertext: bytes, mac_tag: bytes, salt: bytes, nonce: bytes,
                  argon2_params: Parameters) -> bytes:
@@ -111,6 +101,7 @@ class AESCipher(object):
         return cipher.decrypt_and_verify(ciphertext, mac_tag)
 
     _NAME_TO_TYPE = {"argon2id": Type.ID, "argon2i": Type.I, "argon2d": Type.D}
+    """Dictionary quick translation of an argon2 type to appropriate enum"""
 
     @classmethod
     def extract_parameters(cls, argon2item: str) -> List[Union[Parameters, str]]:
