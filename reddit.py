@@ -3,9 +3,10 @@ import os.path
 from base64 import b64encode, b64decode
 import praw
 from typing import Tuple, List
-
+from time import sleep
+from secrets import SystemRandom
 from redditglobals import *
-from argon2 import Parameters   # For typehints
+from argon2 import Parameters  # For typehints
 
 
 # Tuple containing [ciphertext, MAC, salt, time_cost, memory_cost, parallelism, hash_len, argon2type, argon2version]
@@ -46,13 +47,23 @@ def post_encryption(post_title, ciphertext: bytes, MAC: bytes, salt: str, nonce:
     # going to be splitting the encryption since the comment limit is 10000 characters
     # this is the first-level comment
 
+    print(f'\nNumber of comments to post: {len(ciphertext) / 10000 + 1}\n')
+    rand_num = SystemRandom()
     current_comment = file_post.reply(ciphertext[:10000])
     cur_index = 10000
     ciphertext_len = len(ciphertext)
-
+    num_comments = 1
+    next_sleep = rand_num.randrange(10, 22)
+    print(f'\nPosted {num_comments} comment\n')
     # Tries to reply with max chars for comments (10,000) until there isn't enough in the buffer
     while ciphertext_len - cur_index >= 10000:  # Keep replying with max chars until we can't
         current_comment = current_comment.reply(ciphertext[cur_index:cur_index + 10000])
+        num_comments += 1
+        print(f'Posted {num_comments} comment\n')
+        if num_comments == next_sleep:
+            print('Sleeping')
+            next_sleep += rand_num.randrange(1, 10)  # Stop commenting after 1-10 comments
+            sleep(float(rand_num.randrange(200, 450)) / 10.0)  # 20.0-45.0 second sleep
         cur_index += 10000
     if ciphertext_len > cur_index:
         current_comment.reply(ciphertext[cur_index:])
