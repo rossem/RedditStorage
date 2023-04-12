@@ -226,7 +226,8 @@ class GetPanel(wx.Panel):
         self.InitUI()
 
     def fileListener(self, fileName):
-        """Subscribed to 'fileListener' event"""
+        """Sets the value in the 'Filepath' field.
+        Subscribed to 'fileListener' event"""
         self.fileToGetField.SetValue(fileName)
 
     # noinspection PyAttributeOutsideInit
@@ -301,6 +302,10 @@ class GetPanel(wx.Panel):
 
     # noinspection PyUnusedLocal
     def onClickGetItem(self, e):
+        """
+        Gets the file from the specified Reddit post and downloads to specified file path.
+        Activated when the 'Get' button is clicked
+        """
         if (self.fileToGetField.IsEmpty()):
             postMessage1.SetLabel("No File Specified")
         elif (self.keypassField.IsEmpty()):
@@ -314,9 +319,7 @@ class GetPanel(wx.Panel):
     @staticmethod
     def onClickGetRedditList(e):
         """
-        Function used when user clicks the 'Retrieve List of Stored Files' button
-        :param e:
-        :return:
+        Shows a list of files in a separate window posted to the subreddit.
         """
         frame = RedditList()
         pub.sendMessage("subredditListener", subreddit_name=SUBREDDIT)
@@ -325,18 +328,16 @@ class GetPanel(wx.Panel):
 
 class MainNotebook(wx.Notebook):
 
-    def __init__(self, parent):
-        wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=
-        wx.BK_DEFAULT
-                             # wx.BK_TOP
-                             # wx.BK_BOTTOM
-                             # wx.BK_LEFT
-                             # wx.BK_RIGHT
-                             )
-
+    def __init__(self, parent: Union[wx.Window, None] = None):
+        """
+        Constructs a notebook.
+        :param parent: The parent window of the notebook.
+        """
+        wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=wx.BK_DEFAULT)
         self.InitUI()
 
     def InitUI(self):
+        """Initializes the UI for the notbook"""
         tab_one = PostPanel(self)
         self.AddPage(tab_one, "Post")
 
@@ -347,17 +348,17 @@ class MainNotebook(wx.Notebook):
         self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
 
     def OnPageChanged(self, event):
+        """Event for when tab is finished changing"""
         old = event.GetOldSelection()
         new = event.GetSelection()
         sel = self.GetSelection()
-        # print 'OnPageChanged,  old:%d, new:%d, sel:%d\n' % (old, new, sel)
         event.Skip()
 
     def OnPageChanging(self, event):
+        """Event for when tab is about to change"""
         old = event.GetOldSelection()
         new = event.GetSelection()
         sel = self.GetSelection()
-        # print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
         event.Skip()
 
 
@@ -365,7 +366,7 @@ class MainWindow(wx.Frame):
 
     def __init__(self, parent, title: str):
         """
-        Creates a wxPython window
+        Creates a wxPython window.
         :param parent: The parent process for this window
         :param title: The title of the window. Process will show up in things such as Task Manager or 'ps' with this name
         """
