@@ -17,26 +17,37 @@ class AESCipher(object):
         """
         # argon2 outputs a single string with all parameters delimited by a '$'
         self.argon2 = self.hasher.hash(key)
+        """The argon2 parameters, salt, and hash, as output by PasswordHasher"""
+
         self.argon2params, self.salt, self.hash = self.extract_parameters(self.argon2)
+
         # argon2-cffi encodes the values in base64, so we decode it here to get our byte values
         # And we need to add padding '=' because reasons b64 needs that number of chars
         self.key: bytes = b64decode(self.hash + '=')  # Should be 32 bytes long
+        """The key for encrypting, in raw byte form; 32 bytes long"""
         self.secret = key
+        """The password hashed to generate the key"""
 
     # encrypts a file and returns a comment to be posted
     def encrypt_file(self, file_path: str) -> Tuple[bytes, bytes, bytes]:
         """
         Encrypts a file and returns the ciphertext and associated MAC
         :param file_path: The path to the file to encrypt
-        :return: A list containing [ciphertext, MAC]
+        :return: A list containing [ciphertext, MAC, nonce]
         """
+        cipher = AES.new(self.key, AES.MODE_GCM)
+        ciphertext = b''
         with open(file_path, 'rb') as fo:
-            plaintext = fo.read()
-        enc = self._encrypt(plaintext)
+            while True:
+                plaintext = fo.read(20000)
+                if not plaintext:
+                    break
+                ciphertext += cipher.encrypt(plaintext)
+        mac = cipher.digest()
         # comment = enc.decode('ISO-8859-1').encode('ascii')
-        print('\nEncryption info:\nMAC: ', enc[1], '\nSalt: ', self.salt, '\nKey: ', self.hash, '\nSecret: ',
+        print('\nEncryption info:\nMAC: ', mac, '\nSalt: ', self.salt, '\nKey: ', self.hash, '\nSecret: ',
               self.secret)
-        return enc[0], enc[1], enc[2]
+        return ciphertext, mac, cipher.nonce
 
         # takes in a comment to be posted and decrypts it into a file
 
@@ -67,16 +78,16 @@ class AESCipher(object):
         with open(file_path, 'wb') as fo:
             fo.write(dec)
 
-    # encrypts plaintext and generates IV (initialization vector)
-    def _encrypt(self, plaintext: Union[str, bytes]) -> Tuple[bytes, bytes, bytes]:
-        """
-        Returns the AES-GCM-encrypted ciphertext and MAC
-        :param plaintext: The plaintext to encrypt
-        :return: A Tuple containing [ciphertext, MAC]
-        """
-        cipher = AES.new(self.key, AES.MODE_GCM)
-        ciphertext_mac = cipher.encrypt_and_digest(plaintext)
-        return ciphertext_mac[0], ciphertext_mac[1], cipher.nonce
+    # # encrypts plaintext and generates IV (initialization vector)
+    # def _encrypt(self, plaintext: Union[str, bytes]) -> Tuple[bytes, bytes, bytes]:
+    #     """
+    #     Returns the AES-GCM-encrypted ciphertext and MAC
+    #     :param plaintext: The plaintext to encrypt
+    #     :return: A Tuple containing [ciphertext, MAC]
+    #     """
+    #     cipher = AES.new(self.key, AES.MODE_GCM)
+    #     ciphertext_mac = cipher.encrypt_and_digest(plaintext)
+    #     return ciphertext_mac[0], ciphertext_mac[1], cipher.nonce
 
     # decrypts ciphertexts
     def _decrypt(self, ciphertext: bytes, mac_tag: bytes, salt: bytes, nonce: bytes,
